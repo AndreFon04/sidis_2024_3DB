@@ -1,18 +1,17 @@
-package org.sidis.booksauthors.bootstrapping;
+package org.sidis.bookservice.bootstraping;
 
-import com.example.library.authormanagement.model.Author;
-import com.example.library.authormanagement.repositories.AuthorRepository;
-import com.example.library.authormanagement.services.AuthorServiceImpl;
-import com.example.library.bookmanagement.model.Book;
-import com.example.library.bookmanagement.model.BookImage;
-import com.example.library.bookmanagement.model.Genre;
-import com.example.library.bookmanagement.repositories.BookImageRepository;
-import com.example.library.bookmanagement.repositories.BookRepository;
-import com.example.library.bookmanagement.repositories.GenreRepository;
+import org.sidis.bookservice.model.Author;
+import org.sidis.bookservice.model.Book;
+import org.sidis.bookservice.model.BookImage;
+import org.sidis.bookservice.model.Genre;
+import org.sidis.bookservice.repositories.AuthorRepository;
+import org.sidis.bookservice.repositories.BookImageRepository;
+import org.sidis.bookservice.repositories.BookRepository;
+import org.sidis.bookservice.repositories.GenreRepository;
+import org.sidis.bookservice.service.AuthorServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -28,16 +27,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+
 @Component
 @RequiredArgsConstructor
-@Profile("bootstrap")
+//@Profile("bootstrap")
 @Order(3)
-public class BookBootstrapper implements CommandLineRunner {
+public class BookBootstrap implements CommandLineRunner {
 
     @Qualifier("bookRepository")
     private final BookRepository bookRepo;
     private final BookImageRepository bookImageRepo;
     private final GenreRepository genreRepo;
+    @Qualifier("authorRepository")
     private final AuthorRepository authorRepo;
     private final AuthorServiceImpl authorServiceImpl;
     private final ResourceLoader resourceLoader; // Injete ResourceLoader
@@ -186,4 +187,5 @@ public class BookBootstrapper implements CommandLineRunner {
             throw e;
         }
     }
+
 }
