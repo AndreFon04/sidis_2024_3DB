@@ -39,7 +39,6 @@ public class LendingServiceClient {
     @Value("${server.port}")
     private String currentPort;
 
-    @Autowired
     public LendingServiceClient(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
@@ -65,7 +64,6 @@ public class LendingServiceClient {
                 throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Both instances of lending-service are unavailable");
             }
         }
-
         return allLendings;
     }
 

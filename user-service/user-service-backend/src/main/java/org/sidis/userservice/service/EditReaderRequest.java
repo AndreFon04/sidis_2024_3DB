@@ -1,64 +1,36 @@
 package org.sidis.userservice.service;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class EditReaderRequest {
+
+    @Size(max=150)
     private String name;
-    private String email;
+
+    @Size(min=8)
     private String password;
+
     private String rePassword;
+
+    @Email
+    private String email; // serves as username
+
     private String birthdate;
 
     @Pattern(regexp = "[1-9][0-9]{8}")
     private String phoneNumber;
+
     private boolean GDPR;
+
     private Set<String> interests;
-
-    // Constructor
-    public EditReaderRequest(String name, String email, String password, String rePassword,
-                             String birthdate, String phoneNumber, boolean GDPR, Set<String> interests) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.rePassword = rePassword;
-        this.birthdate = birthdate;
-        this.phoneNumber = phoneNumber;
-        this.GDPR = GDPR;
-        this.interests = interests;
-    }
-
-    // Getters
-    public String getName() {
-        return name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getRePassword() {
-        return rePassword;
-    }
-
-    public String getBirthdate() {
-        return birthdate;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public boolean isGDPR() {
-        return GDPR;
-    }
-
-    public Set<String> getInterests() {
-        return interests;
-    }
 }

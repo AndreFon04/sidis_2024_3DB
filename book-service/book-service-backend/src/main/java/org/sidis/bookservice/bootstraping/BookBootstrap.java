@@ -38,15 +38,14 @@ public class BookBootstrap implements CommandLineRunner {
     private final BookRepository bookRepo;
     private final BookImageRepository bookImageRepo;
     private final GenreRepository genreRepo;
-    @Qualifier("authorRepository")
     private final AuthorRepository authorRepo;
     private final AuthorServiceImpl authorServiceImpl;
-    private final ResourceLoader resourceLoader; // Injete ResourceLoader
+    private final ResourceLoader resourceLoader;
 
     @Override
     @Transactional
     public void run(final String... args) {
-        System.out.println("rdBt.run");
+        System.out.println("BookBootstrapper running...");
 
         try {
             // Verify the last ID to initialize the counter if necessary
@@ -71,7 +70,7 @@ public class BookBootstrap implements CommandLineRunner {
             e.printStackTrace();
         }
 
-        System.out.println("rdBt.r1.exit\n");
+        System.out.println("BookBootstrapper finished.");
     }
 
     private void addBooksIndividually() throws IOException {

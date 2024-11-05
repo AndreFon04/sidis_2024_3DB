@@ -26,12 +26,11 @@ public class BookServiceClient {
 
     public BookServiceClient(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
+        log.info("BookServiceClient URLs: instance1=" + bookInstance1Url + ", instance2=" + bookInstance2Url);
     }
 
     public List<GenreDTO> getBooksByGenre(String genre) {
-        // Verifique se os dados estão sendo retornados corretamente
         List<GenreDTO> books = fetchBooksByGenre(bookInstance1Url + "/api/books/genre/" + genre);
-        // Veja aqui se a lista 'books' contém os dados corretos
         if (books.isEmpty()) {
             log.warn("Nenhum livro encontrado para o gênero: " + genre);
         } else {
@@ -41,16 +40,12 @@ public class BookServiceClient {
     }
 
 
-
     private List<GenreDTO> fetchBooksByGenre(String url) {
         ResponseEntity<GenreDTO[]> response = restTemplate.getForEntity(url, GenreDTO[].class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
             List<GenreDTO> books = Arrays.asList(response.getBody());
-
-            // Log para garantir que os livros foram mapeados corretamente
             log.debug("Books received from API: " + books);
-
             return books;
         } else {
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Unable to fetch books from " + url);

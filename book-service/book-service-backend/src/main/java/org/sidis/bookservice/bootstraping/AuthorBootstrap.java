@@ -13,18 +13,19 @@ import java.util.Optional;
 
 
 @Component
-@RequiredArgsConstructor
-//@Profile("bootstrap")
 @Order(1)
 public class AuthorBootstrap implements CommandLineRunner {
 
-    @Qualifier("authorRepository")
     private final AuthorRepository authorRepo;
+
+    public AuthorBootstrap(AuthorRepository authorRepo){
+        this.authorRepo = authorRepo;
+    }
 
     @Override
     @Transactional
     public void run(final String... args) throws Exception {
-        System.out.println("auBt.run");
+        System.out.println("AuthorBootstrapper running...");
 
         final Optional<Author> a = authorRepo.findTopByOrderByAuthorIDDesc();
         if (a.isPresent()) {
@@ -33,7 +34,7 @@ public class AuthorBootstrap implements CommandLineRunner {
         }
 
         addAuthorIndividually();
-        System.out.println("auBt.a4.exit\n");
+        System.out.println("AuthorBootstrapper finished.");
     }
 
 
@@ -69,7 +70,6 @@ public class AuthorBootstrap implements CommandLineRunner {
         addAuthor("Vergílio Ferreira", "Portugal, 1916-1996");
 
     }
-
 
     private void addAuthor(final String name, final String biography) {
         Author author = new Author(name, biography);

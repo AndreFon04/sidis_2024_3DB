@@ -1,11 +1,15 @@
 package org.sidis.userservice.service;
 
+import jakarta.validation.ValidationException;
 import org.sidis.userservice.client.*;
 import org.sidis.userservice.exceptions.ConflictException;
 import org.sidis.userservice.exceptions.NotFoundException;
 import org.sidis.userservice.model.Reader;
 import org.sidis.userservice.model.ReaderCountDTO;
+import org.sidis.userservice.model.User;
 import org.sidis.userservice.repositories.ReaderRepository;
+import org.sidis.userservice.repositories.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -16,14 +20,21 @@ import java.util.stream.Collectors;
 public class ReaderServiceImpl implements ReaderService {
 
     private final ReaderRepository readerRepository;
+    private final UserRepository userRepository;
     private final EditReaderMapper editReaderMapper;
+    private final EditUserMapper editUserMapper;
+    private final PasswordEncoder passwordEncoder;
     private final LendingServiceClient lendingServiceClient;
     private final BookServiceClient bookServiceClient;
 
 
-    public ReaderServiceImpl(ReaderRepository readerRepository, EditReaderMapper editReaderMapper, LendingServiceClient lendingServiceClient, BookServiceClient bookServiceClient) {
+    public ReaderServiceImpl(ReaderRepository readerRepository, UserRepository userRepository, EditReaderMapper editReaderMapper, EditUserMapper editUserMapper,
+                             PasswordEncoder passwordEncoder, LendingServiceClient lendingServiceClient, BookServiceClient bookServiceClient) {
         this.readerRepository = readerRepository;
+        this.userRepository = userRepository;
         this.editReaderMapper = editReaderMapper;
+        this.editUserMapper = editUserMapper;
+        this.passwordEncoder = passwordEncoder;
         this.lendingServiceClient = lendingServiceClient;
         this.bookServiceClient = bookServiceClient;
     }
@@ -35,16 +46,42 @@ public class ReaderServiceImpl implements ReaderService {
 
     @Override
     public Reader create(CreateReaderRequest request) {
-        if (readerRepository.findByEmail(request.getEmail()).isPresent()) {
+        System.out.println("CREATE: request email: " + request.getEmail() + " name: " + request.getName());
+        //if (readerRepository.findByEmail(request.getEmail()).isPresent()) {
+        final Optional<Reader> a = readerRepository.findByEmail(request.getEmail());
+        if (a.isPresent()) {
+            System.out.println("CREATE: " + a.get().getName() + " " + a.get().getEmail());
             throw new ConflictException("Email already exists! Cannot create a new reader.");
         }
-
+        if (userRepository.findByUsername(request.getEmail()).isPresent()) {
+            throw new ConflictException("Email already exists! Cannot create a new user.");
+        }
+        String p = request.getPassword();
+        if (!(p.matches(".*[a-z].*") && p.matches(".*[A-Z].*") && p.matches(".*[0-9!@#$%&*()_+=|<>?{}\\[\\]~./-].*"))) {
+            throw new ValidationException("Password must contain 1 lower and 1 upper case letter and 1 digit or special character!");
+        }
+        if (!p.equals(request.getRePassword())) {
+            throw new ValidationException("Passwords don't match!");
+        }
         validateBirthdate(request.getBirthdate());
 
         final Reader reader = editReaderMapper.create(request);
+
+        CreateUserRequest userRequest = new CreateUserRequest(request.getEmail(), request.getName(), request.getPassword());
+        Set<String> authorities = new HashSet<>();
+        authorities.add("READER");
+        userRequest.setAuthorities(authorities);
+        final User user = editUserMapper.create(userRequest);
+
         reader.setUniqueReaderID();
 
+        reader.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        System.out.println("CREATE: reader: " + reader.getName() + " " + reader.getEmail() + " " + reader.getReaderID());
+
         readerRepository.save(reader);
+        userRepository.save(user);
 
         return reader;
     }
@@ -149,7 +186,6 @@ public class ReaderServiceImpl implements ReaderService {
                 .collect(Collectors.toList());
     }
 
-
     public List<GenreDTO> getBookSuggestions(Reader reader) {
         Set<String> interests = getInterestsByReader(reader);
         List<GenreDTO> suggestions = new ArrayList<>();
@@ -165,7 +201,4 @@ public class ReaderServiceImpl implements ReaderService {
         return reader.getInterests();
 
     }
-
-
-
 }

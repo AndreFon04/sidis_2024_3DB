@@ -1,41 +1,61 @@
 package org.sidis.userservice.service;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+
 import java.util.Set;
 
+@Data
+@RequiredArgsConstructor
+@NoArgsConstructor
 public class CreateReaderRequest {
-    private String email;
+    @NonNull
+    @NotBlank
+    @Size(max=150)
+    private String name;
+
+    @NonNull
+    @NotBlank
+    @Size(min=8)
     private String password;
+
+    @NonNull
+    @NotBlank
     private String rePassword;
+
+    @NonNull
+    @NotBlank
+    @Email
+    private String email;
+
+    @NonNull
+    @NotBlank
     private String birthdate;
-    private Set<String> interests; // Adicionar esta propriedade
 
-    // Constructor
-    public CreateReaderRequest(String email, String password, String rePassword, String birthdate, Set<String> interests) {
-        this.email = email;
+    @NonNull
+    @NotBlank
+    @Pattern(regexp = "[1-9][0-9]{8}")
+    private String phoneNumber;
+
+    private boolean GDPR;
+
+    private Set<String> interests;
+
+    public CreateReaderRequest(final String name, final String password, final String email, final String birthdate,
+                               final String phoneNumber, final boolean GDPR, final Set<String> interests) {
+        this.name = name;
         this.password = password;
-        this.rePassword = rePassword;
+        this.rePassword = password;
+        this.email = email;
         this.birthdate = birthdate;
-        this.interests = interests; // Inicializar a propriedade
-    }
-
-    // Getters
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getRePassword() {
-        return rePassword;
-    }
-
-    public String getBirthdate() {
-        return birthdate;
-    }
-
-    public Set<String> getInterests() {
-        return interests; // Adicionar o getter para 'interests'
+        this.phoneNumber = phoneNumber;
+        this.GDPR = GDPR;
+        this.interests = interests;
     }
 }

@@ -15,11 +15,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.sidis.userservice.service.SearchReadersQuery;
+import org.sidis.userservice.service.SearchRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.server.ResponseStatusException;
@@ -72,47 +76,10 @@ class ReaderController {
         return ResponseEntity.ok().eTag(Long.toString(reader.getVersion())).body(readerMapper.toReaderView(reader));
     }
 
-
-    @Operation(summary = "Partially updates an existing reader")
-    @PatchMapping(value = "/{id1}/{id2}")
-    public ResponseEntity<ReaderView> partialUpdate(final WebRequest request,
-                                                    @PathVariable("id1") final String id1, @PathVariable("id2") final String id2,
-                                                    @Valid @RequestBody final EditReaderRequest resource) {
-        String readerID = id1 + "/" + id2;
-
-        final String ifMatchValue = request.getHeader(IF_MATCH);
-        if (ifMatchValue == null || ifMatchValue.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You must issue a conditional PATCH using 'if-match'");
-        }
-
-        final var reader = readerService.partialUpdate(readerID, resource, getVersionFromIfMatchHeader(ifMatchValue));
-        return ResponseEntity.ok().eTag(Long.toString(reader.getVersion())).body(readerMapper.toReaderView(reader));
-    }
-
-    private Long getVersionFromIfMatchHeader(final String ifMatchHeader) {
-        if (ifMatchHeader.startsWith("\"")) {
-            return Long.parseLong(ifMatchHeader.substring(1, ifMatchHeader.length() - 1));
-        }
-        return Long.parseLong(ifMatchHeader);
-    }
-
-    @Operation(summary = "Get top 5 Readers by number of lendings")
-    @GetMapping("/top5Readers")
-    public List<ReaderCountDTO> getTop5Readers() {
+    @Operation(summary = "Gets the top 5 Readers by number of lendings")
+    @GetMapping("/top5")
+    public List<ReaderCountDTO> findTop5() {
         return readerService.findTop5Readers();
-    }
-
-    @Operation(summary = "Get a Reader by name")
-    @GetMapping(value = "/name/{name}")
-    public List<ReaderView> findByName(
-            @PathVariable("name") @Parameter(description = "The name of the Reader to find") final String name) {
-        System.out.println("apiBookTitle");
-        final var reader = readerService.getReaderByName(name);
-        if (reader.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Reader not found!");
-        }
-
-        return readerMapper.toReaderView(reader);
     }
 
     @Operation(summary = "Gets book suggestions based on the list of interests of the Reader")
@@ -123,28 +90,51 @@ class ReaderController {
 
         return readerService.getBookSuggestions(reader);
     }
-
-    @PatchMapping("/readers/{id1}/{id2}/interests")
-    public ResponseEntity<ReaderView> updateInterests(
-            @PathVariable("id1") String id1,
-            @PathVariable("id2") String id2,
-            @RequestBody Set<String> newInterests) {
-
-        // Concatena o id1 e o id2 para formar o readerID
-        String readerID = id1 + "/" + id2;
-
-        // Busca o reader com o readerID completo (ano/counter)
-        Reader reader = readerService.getReaderByID(readerID)
-                .orElseThrow(() -> new NotFoundException(Reader.class, readerID));
-
-        // Adiciona os novos interesses ao leitor
-        reader.addInterests(newInterests);
-
-        // Salva o reader atualizado
-        readerRepository.save(reader);
-
-        // Retorna o reader atualizado na resposta
-        return ResponseEntity.ok(readerMapper.toReaderView(reader));
+    private Long getVersionFromIfMatchHeader(final String ifMatchHeader) {
+        if (ifMatchHeader.startsWith("\"")) {
+            return Long.parseLong(ifMatchHeader.substring(1, ifMatchHeader.length() - 1));
+        }
+        return Long.parseLong(ifMatchHeader);
     }
 
+
+    @Operation(summary = "Searches any existing Reader by name, email or phone number")
+    @PostMapping("search")
+    public ListResponse<ReaderView> search(@RequestBody final SearchRequest<SearchReadersQuery> request) {
+        final List<Reader> searchReaders = readerService.searchReaders(request.getPage(), request.getQuery());
+        return new ListResponse<>(readerMapper.toReaderView(searchReaders));
+    }
+
+
+
+    @Operation(summary = "Partially updates an existing reader")
+    @PatchMapping(value = "/{id1}/{id2}")
+    public ResponseEntity<ReaderView> partialUpdate(final WebRequest request,
+                                                    @PathVariable("id1") final String id1, @PathVariable("id2") final String id2,
+                                                    @Valid @RequestBody final EditReaderRequest resource) {
+        String readerID = id1 + "/" + id2;
+
+        // Validar se o user autenticado tem o mesmo readerID que o readerID acima, se nao, é FORBIDDEN
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+        currentUsername = currentUsername.replaceFirst(".*,", ""); //PREGO
+
+        Reader r = readerService.getReaderByID(readerID).orElseThrow(() -> new NotFoundException(Reader.class, readerID));
+
+        System.out.println(readerID + " " + currentUsername);
+        System.out.println(r.getReaderID() + " " + r.getEmail());
+
+        if (!currentUsername.equals(r.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to update this object.");
+        }
+        // Fim de validação
+
+        final String ifMatchValue = request.getHeader(IF_MATCH);
+        if (ifMatchValue == null || ifMatchValue.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You must issue a conditional PATCH using 'if-match'");
+        }
+
+        final var reader = readerService.partialUpdate(readerID, resource, getVersionFromIfMatchHeader(ifMatchValue));
+        return ResponseEntity.ok().eTag(Long.toString(reader.getVersion())).body(readerMapper.toReaderView(reader));
+    }
 }

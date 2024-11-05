@@ -21,7 +21,11 @@ public abstract class ReaderViewMapper {
     public abstract Iterable<ReaderView> toReaderView(Iterable<Reader> reader);
 
     Set<String> map(Set<String> interests) {
-        return new HashSet<>(interests);
+        Set<String> result = new HashSet<>();
+//        for (Genre genre : value){
+//            result.add(genre.getInterest());
+//        }
+        return result;
     }
 
     @Named("mapImageIdToUrl")

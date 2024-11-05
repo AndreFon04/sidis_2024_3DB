@@ -19,7 +19,6 @@ public class LendingServiceClient {
     private static final Logger log = LoggerFactory.getLogger(LendingServiceClient.class);
     private final RestTemplate restTemplate;
 
-    @Autowired
     public LendingServiceClient(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
@@ -48,11 +47,9 @@ public class LendingServiceClient {
                 throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Both instances of lending-service are unavailable");
             }
         }
-
         return allLendings;
     }
 
-    // Método auxiliar para buscar os empréstimos de uma URL específica
     private List<LendingDTO> fetchLendingRecords(String url) {
         ResponseEntity<LendingDTO[]> response = restTemplate.getForEntity(url, LendingDTO[].class);
 

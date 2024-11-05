@@ -17,7 +17,7 @@ import java.util.List;
 @Order(2)
 public class GenreBootstrap implements CommandLineRunner {
 
-    private final GenreRepository genreRepository;
+    private final GenreRepository genreRepo;
 
     @Override
     public void run(String... args) {
@@ -37,8 +37,8 @@ public class GenreBootstrap implements CommandLineRunner {
         );
 
         // So deve fazer save se ainda não existirem na db !!!
-        if (genreRepository.count() == 0) {
-            genreRepository.saveAll(genres);
+        if (genreRepo.count() == 0) {
+            genreRepo.saveAll(genres);
         }
         System.out.println("Genres initialized");
     }

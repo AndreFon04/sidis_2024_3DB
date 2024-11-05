@@ -4,11 +4,14 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.StaleObjectStateException;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.HashSet;
@@ -17,6 +20,7 @@ import java.util.Set;
 
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class Reader {
 
     @Id
@@ -70,18 +74,27 @@ public class Reader {
     @JoinColumn(name = "readerimage_id")
     private ReaderImage readerImage;
 
+    private static final long serialVersionUID = 1L;
+
+    // auditing info
     @CreatedDate
     @Column(nullable = false, updatable = false)
+    @Getter
     private LocalDateTime createdAt;
 
-    @CreatedBy
-    @Column(nullable = false, updatable = false)
-    private String createdBy;
-
+    // auditing info
     @LastModifiedDate
     @Column(nullable = false)
+    @Getter
     private LocalDateTime modifiedAt;
 
+    // auditing info
+    @CreatedBy
+    @Column(nullable = false, updatable = false)
+    @Getter
+    private String createdBy;
+
+    // auditing info
     @LastModifiedBy
     @Column(nullable = false)
     private String modifiedBy;
@@ -90,27 +103,16 @@ public class Reader {
     @Getter
     private boolean enabled = true;
 
-    private static final long serialVersionUID = 1L;
+    public Reader() {
+    }
 
     private static int currentYear = Year.now().getValue();
     private static int counter = 0;
 
-    public Reader() {}
-
-    public Reader(final String name, final String password, final String email, final String birthdate,
-                  final String phoneNumber, final boolean GDPR) {
-        this.name = name;
-        setPassword(password);
-        this.readerID = generateUniqueReaderID();
-        this.email = email;
-        this.birthdate = birthdate;
-        this.phoneNumber = phoneNumber;
-        this.GDPR = GDPR;
-        this.createdAt = LocalDateTime.now();  // Atribuir o valor atual
-    }
 
     public void initCounter(String lastReaderID) {
         if (lastReaderID != null && !lastReaderID.isBlank()) {
+            // Split the lastReaderID into year and counter
             String[] parts = lastReaderID.split("/");
             if (parts.length == 2) {
                 currentYear = Integer.parseInt(parts[0]);
@@ -126,11 +128,28 @@ public class Reader {
         }
 
         counter++;
-        return currentYear + "/" + counter;
+        String idCounter = String.format("%d", counter);
+        return currentYear + "/" + idCounter;
+    }
+
+    public Reader(final String name, final String password, final String email, final String birthdate,
+                  final String phoneNumber, final boolean GDPR) {
+        this.name = name;
+        setPassword(password);
+        this.readerID = generateUniqueReaderID();
+        this.email = email;
+        this.birthdate = birthdate;
+        this.phoneNumber = phoneNumber;
+        this.GDPR = GDPR;
+//		this.createdAt = this.modifiedAt = LocalDateTime.now();
+//		this.createdBy = this.modifiedBy = "xxx";
     }
 
     public String getReaderID() { return readerID; }
     public void setReaderID(String readerID) { this.readerID = readerID; }
+    public void setUniqueReaderID() {
+        this.readerID = generateUniqueReaderID();
+    }
 
     public String getName() { return name; }
     public void setName(final String name) {
@@ -152,6 +171,36 @@ public class Reader {
     public String getBirthdate() { return birthdate; }
     public void setBirthdate(final String birthdate) {
         if (birthdate == null) throw new IllegalArgumentException("Birthdate cannot be null");
+        if (!birthdate.isBlank()) {
+            // Split the birthdate into day, month and year (YYYY-MM-DD)
+            String[] parts = birthdate.split("-");
+            if (parts.length != 3) throw new IllegalArgumentException("Birthdate must be in the format YYYY-MM-DD");
+
+            try {
+                int birthdateDay = Integer.parseInt(parts[2]);
+                int birthdateMonth = Integer.parseInt(parts[1]);
+                int birthdateYear = Integer.parseInt(parts[0]);
+
+                if (birthdateYear <= 0) throw new IllegalArgumentException("Year must be positive");
+                if (birthdateMonth < 1 || birthdateMonth > 12) throw new IllegalArgumentException("Month must be between 1 and 12");
+                if (birthdateDay < 1 || birthdateDay > 31) throw new IllegalArgumentException("Day must be between 1 and 31");
+                // Check if the day is valid for the given month
+                if ((birthdateMonth == 4 || birthdateMonth == 6 || birthdateMonth == 9 || birthdateMonth == 11) && birthdateDay > 30) {
+                    throw new IllegalArgumentException("Day must be between 1 and 30 for the given month");
+                }
+                if (birthdateMonth == 2) {
+                    boolean isLeapYear = (birthdateYear % 4 == 0 && birthdateYear % 100 != 0) || (birthdateYear % 400 == 0);
+                    int maxDayInFebruary = isLeapYear ? 29 : 28;
+                    if (birthdateDay > maxDayInFebruary) {
+                        throw new IllegalArgumentException("Day must be between 1 and " + maxDayInFebruary + " for February");
+                    }
+                }
+                if (LocalDate.of(birthdateYear, birthdateMonth, birthdateDay).isAfter(LocalDate.now().minusYears(12))) {
+                    throw new IllegalArgumentException("Minimum age is 12");  }
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Birthdate must contain valid integers for day, month, and year", e);
+            }
+        }
         this.birthdate = birthdate;
     }
 
@@ -167,24 +216,12 @@ public class Reader {
         this.GDPR = true;
     }
 
-    public void setUniqueReaderID() {
-        this.readerID = generateUniqueReaderID();
-    }
-
     public Long getVersion() { return version; }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return this.createdAt;
-    }
 
     public void applyPatch(final long desiredVersion, final String name, final String password, final String email,
                            final String birthdate, final String phoneNumber, final boolean GDPR, final Set<String> interests) {
-        if (this.version != desiredVersion)
-            throw new IllegalArgumentException("Object was already modified by another user");
+
+        if (this.version != desiredVersion) throw new StaleObjectStateException("Object was already modified by another user", this.pk);
 
         if (name != null) setName(name);
         if (password != null) setPassword(password);
@@ -192,40 +229,7 @@ public class Reader {
         if (birthdate != null) setBirthdate(birthdate);
         if (phoneNumber != null) setPhoneNumber(phoneNumber);
         setGDPR(GDPR);
-        setInterests(interests);
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public LocalDateTime getModifiedAt() {
-        return modifiedAt;
-    }
-
-    public void setModifiedAt(LocalDateTime modifiedAt) {
-        this.modifiedAt = modifiedAt;
-    }
-
-    public String getModifiedBy() {
-        return modifiedBy;
-    }
-
-    public void setModifiedBy(String modifiedBy) {
-        this.modifiedBy = modifiedBy;
-    }
-
-    @PrePersist
-    @PreUpdate
-    public void setAuditableFields() {
-        this.modifiedAt = LocalDateTime.now();
-        if (this.modifiedBy == null) {
-            this.modifiedBy = "system"; // ou outro valor padrão se não houver um utilizador autenticado
-        }
+        addInterests(interests);
     }
 
     public void addInterests(final Set<String> i) {
