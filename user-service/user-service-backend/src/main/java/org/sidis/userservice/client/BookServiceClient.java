@@ -34,7 +34,7 @@ public class BookServiceClient {
         if (books.isEmpty()) {
             log.warn("Nenhum livro encontrado para o gênero: " + genre);
         } else {
-            log.debug("Livros retornados: " + books);
+            log.info("Livros retornados: " + books);
         }
         return books;
     }
@@ -45,7 +45,7 @@ public class BookServiceClient {
 
         if (response.getStatusCode() == HttpStatus.OK) {
             List<GenreDTO> books = Arrays.asList(response.getBody());
-            log.debug("Books received from API: " + books);
+            log.info("Books received from API: " + books);
             return books;
         } else {
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Unable to fetch books from " + url);

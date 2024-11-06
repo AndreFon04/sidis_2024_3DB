@@ -16,6 +16,8 @@ public interface ReaderService {
 
     Reader create(CreateReaderRequest request);
 
+    Reader saveReader(Reader reader);
+
     Reader partialUpdate(String readerID, EditReaderRequest request, long parseLong);
 
     Set<String> getInterestsByReader(Reader reader);

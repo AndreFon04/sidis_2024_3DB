@@ -28,7 +28,7 @@ public interface SpringDataLendingRepository extends CrudRepository<Lending, Lon
     Optional<String> findReaderByLendingID(@Param("lendingID") String lendingID);
 
     @Override
-    @Query(value = "SELECT * FROM Lending ORDER BY lendingID DESC LIMIT 1", nativeQuery = true)
+    @Query(value = "SELECT l FROM Lending l ORDER BY substring(l.lendingID, 1, 4), cast(substring(l.lendingID, 6, 10) AS int) DESC LIMIT 1")
     Optional<Lending> findFirstByOrderByLendingIDDesc();
 
     @Override

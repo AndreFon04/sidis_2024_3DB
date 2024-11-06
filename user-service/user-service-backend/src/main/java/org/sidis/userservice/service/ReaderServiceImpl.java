@@ -26,10 +26,11 @@ public class ReaderServiceImpl implements ReaderService {
     private final PasswordEncoder passwordEncoder;
     private final LendingServiceClient lendingServiceClient;
     private final BookServiceClient bookServiceClient;
+    private final ReaderServiceClient readerServiceClient;
 
 
     public ReaderServiceImpl(ReaderRepository readerRepository, UserRepository userRepository, EditReaderMapper editReaderMapper, EditUserMapper editUserMapper,
-                             PasswordEncoder passwordEncoder, LendingServiceClient lendingServiceClient, BookServiceClient bookServiceClient) {
+                             PasswordEncoder passwordEncoder, LendingServiceClient lendingServiceClient, BookServiceClient bookServiceClient, ReaderServiceClient readerServiceClient) {
         this.readerRepository = readerRepository;
         this.userRepository = userRepository;
         this.editReaderMapper = editReaderMapper;
@@ -37,6 +38,7 @@ public class ReaderServiceImpl implements ReaderService {
         this.passwordEncoder = passwordEncoder;
         this.lendingServiceClient = lendingServiceClient;
         this.bookServiceClient = bookServiceClient;
+        this.readerServiceClient = readerServiceClient;
     }
 
     @Override
@@ -83,6 +85,15 @@ public class ReaderServiceImpl implements ReaderService {
         readerRepository.save(reader);
         userRepository.save(user);
 
+        readerServiceClient.saveReader(reader);
+//        readerServiceClient.saveUser(user);
+
+        return reader;
+    }
+
+    @Override
+    public Reader saveReader(Reader reader) {
+        readerRepository.save(reader);
         return reader;
     }
 

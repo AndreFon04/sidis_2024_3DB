@@ -125,7 +125,7 @@ public class SecurityConfig {
 
                 // Our private endpoints
                 .requestMatchers("/api/admin/librarian/**").permitAll() // lib management
-                .requestMatchers("/api/admin/reader/**").permitAll() // reader management
+                .requestMatchers("/api/admin/user/**").permitAll() // reader management
 
 
                 .anyRequest().authenticated()

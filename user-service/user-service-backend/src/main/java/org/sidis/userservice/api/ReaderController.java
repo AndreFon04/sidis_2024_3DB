@@ -5,8 +5,7 @@ import org.sidis.userservice.exceptions.NotFoundException;
 import org.sidis.userservice.model.Reader;
 import org.sidis.userservice.model.ReaderCountDTO;
 import org.sidis.userservice.repositories.ReaderRepository;
-import org.sidis.userservice.service.EditReaderRequest;
-import org.sidis.userservice.service.ReaderServiceImpl;
+import org.sidis.userservice.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -15,8 +14,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.sidis.userservice.service.SearchReadersQuery;
-import org.sidis.userservice.service.SearchRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -137,4 +134,13 @@ class ReaderController {
         final var reader = readerService.partialUpdate(readerID, resource, getVersionFromIfMatchHeader(ifMatchValue));
         return ResponseEntity.ok().eTag(Long.toString(reader.getVersion())).body(readerMapper.toReaderView(reader));
     }
+
+    @PostMapping("/internal")
+    public ResponseEntity<Reader> saveReader(@Valid @RequestBody final Reader request) {
+        Reader reader = readerService.saveReader(request);
+
+        return ResponseEntity.ok().eTag(Long.toString(reader.getVersion())).body(reader);
+    }
+
+
 }

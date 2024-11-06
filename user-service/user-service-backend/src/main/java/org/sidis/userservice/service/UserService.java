@@ -1,6 +1,8 @@
 package org.sidis.userservice.service;
 
+import org.sidis.userservice.client.ReaderServiceClient;
 import org.sidis.userservice.exceptions.ConflictException;
+import org.sidis.userservice.model.Reader;
 import org.sidis.userservice.model.User;
 import org.sidis.userservice.repositories.UserRepository;
 import jakarta.validation.ValidationException;
@@ -22,6 +24,7 @@ public class UserService implements UserDetailsService {
 
 	private final UserRepository userRepo;
 	private final EditUserMapper userEditMapper;
+	private final ReaderServiceClient readerServiceClient;
 
 	private final PasswordEncoder passwordEncoder;
 
@@ -92,4 +95,10 @@ public class UserService implements UserDetailsService {
 		}
 		return userRepo.searchUsers(page, query);
 	}
+
+//	public User saveUser(CreateUserRequest request) {
+//		final User user = userEditMapper.create(request);
+//		readerServiceClient.saveUser(user);
+//		return user;
+//	}
 }

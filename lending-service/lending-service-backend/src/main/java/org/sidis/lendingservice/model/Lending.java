@@ -52,11 +52,30 @@ public class Lending {
     @Column(name = "VERSION", nullable = false)
     private long version;
 
+    public Lending() {}
+
     private static int currentYear = Year.now().getValue();
     private static int counter = 0;
 
-    public Lending() {
-        // Construtor padrão
+    public void initCounter(String lastLendingID) {
+        if (lastLendingID != null && !lastLendingID.isBlank()) {
+            String[] parts = lastLendingID.split("/");
+            if (parts.length == 2) {
+                currentYear = Integer.parseInt(parts[0]);
+                counter = Integer.parseInt(parts[1]);
+            }
+        }
+    }
+
+    private String generateUniqueLendingID() {
+        if (Year.now().getValue() != currentYear) {
+            currentYear = Year.now().getValue();
+            counter = 0;
+        }
+
+        counter++;
+        String idCounter = String.format("%d", counter);
+        return currentYear + "/" + idCounter;
     }
 
     public Lending(final Long bookID, final String readerID, final LocalDate startDate, final LocalDate returnDate,
@@ -79,27 +98,6 @@ public class Lending {
             this.overdue = this.returnDate.isAfter(this.expectedReturnDate);
         } else {
             this.overdue = LocalDate.now().isAfter(this.expectedReturnDate);
-        }
-    }
-
-    private String generateUniqueLendingID() {
-        if (Year.now().getValue() != currentYear) {
-            currentYear = Year.now().getValue();
-            counter = 0;
-        }
-
-        counter++;
-        String idCounter = String.format("%d", counter);
-        return currentYear + "/" + idCounter;
-    }
-
-    public void initCounter(String lastLendingID) {
-        if (lastLendingID != null && !lastLendingID.isBlank()) {
-            String[] parts = lastLendingID.split("/");
-            if (parts.length == 2) {
-                currentYear = Integer.parseInt(parts[0]);
-                counter = Integer.parseInt(parts[1]);
-            }
         }
     }
 }
