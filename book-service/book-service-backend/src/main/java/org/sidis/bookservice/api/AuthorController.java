@@ -112,7 +112,7 @@ public class AuthorController {
     //SprintB
 
     @Operation(summary = "Get coauthors")
-    @GetMapping("/{id1}/{id2}/coauthors")
+    @GetMapping("/coauthors/{id1}/{id2}/")
     public ResponseEntity<List<CoAuthorDTO>> getCoAuthorsAndBooks(@PathVariable String id1, @PathVariable String id2) {
         String authorId = id1 + "/" + id2;
 

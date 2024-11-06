@@ -26,7 +26,6 @@ public class BookServiceImpl implements BookService {
 
     private final LendingServiceClient lendingServiceClient;
 
-    @Autowired
     public BookServiceImpl(BookRepository bookRepository, BookImageRepository bookImageRepository, GenreRepository genreRepository, AuthorRepository authorRepository, LendingServiceClient lendingServiceClient) {
         this.bookRepository = bookRepository;
         this.bookImageRepository = bookImageRepository;
@@ -120,8 +119,13 @@ public class BookServiceImpl implements BookService {
         return book;
     }
 
+    @Override
     public List<Book> getAll() {
-        return bookRepository.findAll();
+        System.out.println("BookServiceImpl getAll()");
+        //return bookRepository.findAll();
+        final List<Book> a = bookRepository.findAll();
+        System.out.println("BookServiceImpl bookRepository.findAll() result: " + a.size() + " " + a.get(0).getTitle());
+        return a;
     }
 
 

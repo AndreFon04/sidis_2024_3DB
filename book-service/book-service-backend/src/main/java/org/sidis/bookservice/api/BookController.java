@@ -101,6 +101,7 @@ class BookController {
             array = @ArraySchema(schema = @Schema(implementation = BookView.class)))})
     @GetMapping
     public Iterable<BookView> getAll() {
+        System.out.println("Books API getAll()");
         return bookMapper.toBookView(bookService.getAll());
     }
 
@@ -113,13 +114,6 @@ class BookController {
 
         return ResponseEntity.ok().eTag(Long.toString(book.getVersion())).body(bookMapper.toBookView(book));
     }
-
-    @GetMapping("/top5Genres")
-    public List<GenreBookCountDTO> findTop5Genres() {
-        List<Map.Entry<String, Long>> topGenres = bookService.findTop5Genres();
-        return bookMapper.mapTopGenresToGenreBookCountDTOs(topGenres);
-    }
-
 
     @Operation(summary = "Get books by author ID")
     @GetMapping(value = "/author/{id1}/{id2}")
@@ -137,6 +131,49 @@ class BookController {
         return bookMapper.toBookView(books);
     }
 
+    @GetMapping("/top5Genres")
+    public List<GenreBookCountDTO> findTop5Genres() {
+        List<Map.Entry<String, Long>> topGenres = bookService.findTop5Genres();
+        return bookMapper.mapTopGenresToGenreBookCountDTOs(topGenres);
+    }
+
+    @Operation(summary = "Get top 5 books by number of lendings")
+    @GetMapping("/top5Books")
+    public List<BookCountDTO> getTop5Books() {
+        return bookService.findTop5Books();
+    }
+
+    private Long getVersionFromIfMatchHeader(final String ifMatchHeader) {
+        if (ifMatchHeader.startsWith("\"")) {
+            return Long.parseLong(ifMatchHeader.substring(1, ifMatchHeader.length() - 1));
+        }
+        return Long.parseLong(ifMatchHeader);
+    }
+
+
+
+    @Operation(summary = "Creates a new Book")
+    @PostMapping
+    public ResponseEntity<BookView> createBook(@Valid @RequestBody CreateBookRequest request) {
+        Book createdBook = bookService.create(request);
+        return ResponseEntity.ok(bookMapper.toBookView(createdBook));
+    }
+
+    @PatchMapping(value = "/{bookID}")
+    public ResponseEntity<BookView> partialUpdate(final WebRequest request,
+                                                  @PathVariable("bookID") @Parameter(description = "The id of the book to update") final Long bookID,
+                                                  @Valid @RequestBody final EditBookRequest resource) {
+        final String ifMatchValue = request.getHeader(IF_MATCH);
+        if (ifMatchValue == null || ifMatchValue.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You must issue a conditional PATCH using 'if-match'");
+        }
+
+        final var book = bookService.partialUpdate(bookID, resource, getVersionFromIfMatchHeader(ifMatchValue));
+        return ResponseEntity.ok().eTag(Long.toString(book.getVersion())).body(bookMapper.toBookView(book));
+    }
+
+
+
     @PutMapping(value = "/{bookID}/image", consumes = "multipart/form-data")
     public ResponseEntity<Void> addImageToBook(
             @PathVariable("bookID") @Parameter(description = "The id of the book to update") final Long bookID,
@@ -152,8 +189,6 @@ class BookController {
         bookService.addImageToBook(bookID, imageBytes, imageFile.getContentType());
         return ResponseEntity.ok().build();
     }
-
-
     @GetMapping("/images/{imageId}")
     public ResponseEntity<byte[]> getBookImage(@PathVariable Long imageId) {
         BookImage bookImage = bookImageRepo.findById(imageId)
@@ -162,39 +197,5 @@ class BookController {
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(bookImage.getContentType()))
                 .body(bookImage.getImage());
-    }
-
-    @Operation(summary = "Creates a new Book")
-    @PostMapping
-    public ResponseEntity<BookView> createBook(@Valid @RequestBody CreateBookRequest request) {
-        Book createdBook = bookService.create(request);
-        return ResponseEntity.ok(bookMapper.toBookView(createdBook));
-    }
-
-
-    @PatchMapping(value = "/{bookID}")
-    public ResponseEntity<BookView> partialUpdate(final WebRequest request,
-                                                  @PathVariable("bookID") @Parameter(description = "The id of the book to update") final Long bookID,
-                                                  @Valid @RequestBody final EditBookRequest resource) {
-        final String ifMatchValue = request.getHeader(IF_MATCH);
-        if (ifMatchValue == null || ifMatchValue.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You must issue a conditional PATCH using 'if-match'");
-        }
-
-        final var book = bookService.partialUpdate(bookID, resource, getVersionFromIfMatchHeader(ifMatchValue));
-        return ResponseEntity.ok().eTag(Long.toString(book.getVersion())).body(bookMapper.toBookView(book));
-    }
-
-    private Long getVersionFromIfMatchHeader(final String ifMatchHeader) {
-        if (ifMatchHeader.startsWith("\"")) {
-            return Long.parseLong(ifMatchHeader.substring(1, ifMatchHeader.length() - 1));
-        }
-        return Long.parseLong(ifMatchHeader);
-    }
-
-    @Operation(summary = "Get top 5 books by number of lendings")
-    @GetMapping("/top5Books")
-    public List<BookCountDTO> getTop5Books() {
-        return bookService.findTop5Books();
     }
 }
