@@ -20,6 +20,7 @@
         <module>book-service</module>
         <module>lending-service</module>
         <module>user-service</module>
+        <module>bookCommand</module>
     </modules>
 
     <properties>
