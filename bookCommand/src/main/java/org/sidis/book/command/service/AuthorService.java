@@ -10,13 +10,13 @@ import java.util.UUID;
 
 public interface AuthorService {
 
-    List<Author> findByName(String name);
-
-    Optional<Author> findByAuthorID(String authorID);
+//    List<Author> findByName(String name);
+//
+//    Optional<Author> findByAuthorID(String authorID);
 
     Author create(CreateAuthorRequest request, UUID authorID);
 
     Author partialUpdate(String authorID, EditAuthorRequest request, long parseLong);
 
-    List<CoAuthorDTO> getCoAuthorsAndBooks(String authorId);
+//    List<CoAuthorDTO> getCoAuthorsAndBooks(String authorId);
 }

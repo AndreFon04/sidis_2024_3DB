@@ -1,8 +1,8 @@
-package org.sidis.book.command.api;
+package org.sidis.book.query.api;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.sidis.book.command.model.Author;
+import org.sidis.book.query.model.Author;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
@@ -30,6 +30,4 @@ public interface AuthorViewMapper {
             return null;
         }
     }
-
-    Author toAuthorView1(AuthorView authorView);
 }

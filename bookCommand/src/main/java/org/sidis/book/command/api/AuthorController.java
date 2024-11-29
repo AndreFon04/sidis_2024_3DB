@@ -39,11 +39,6 @@ public class AuthorController {
     private final AuthorServiceImpl authorService;
     private final Helper helper;
 
-    private final BookServiceImpl bookService;
-    private final BookViewMapper bookViewMapper;
-
-    private final AuthorViewMapper authorViewMapper;
-
     private static final Logger logger = LoggerFactory.getLogger(AuthorController.class);
 
 
@@ -51,9 +46,6 @@ public class AuthorController {
     public AuthorController(AuthorServiceImpl authorService, Helper helper, BookServiceImpl bookService, BookViewMapper bookViewMapper, AuthorViewMapper authorViewMapper) {
         this.authorService = authorService;
         this.helper = helper;
-        this.bookService = bookService;
-        this.bookViewMapper = bookViewMapper;
-        this.authorViewMapper = authorViewMapper;
     }
 
 //    @Operation(summary = "Gets a specific Author by Name")
@@ -80,9 +72,9 @@ public class AuthorController {
     @Operation(summary = "Creates a new Author")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Author> create(HttpServletRequest HTTPrequest,
+    public ResponseEntity<Author> create(HttpServletRequest HTTPRequest,
                                          @Valid @RequestBody final CreateAuthorRequest request) {
-        UUID authorID = helper.getUserByToken(HTTPrequest);
+        UUID authorID = helper.getUserByToken(HTTPRequest);
 
         final var author = authorService.create(request, authorID);
         return ResponseEntity.ok().eTag(Long.toString(author.getVersion())).body(author);
