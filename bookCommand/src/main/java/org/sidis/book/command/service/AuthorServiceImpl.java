@@ -1,9 +1,8 @@
 package org.sidis.book.command.service;
 
 import jakarta.persistence.EntityNotFoundException;
-import org.sidis.book.command.client.LendingDTO;
-import org.sidis.book.command.client.LendingServiceClient;
 import org.sidis.book.command.exceptions.NotFoundException;
+import org.sidis.book.command.message_broker.MessagePublisher;
 import org.sidis.book.command.model.Author;
 import org.sidis.book.command.model.Book;
 import org.sidis.book.command.model.CoAuthorDTO;
@@ -22,20 +21,16 @@ import java.util.stream.Collectors;
 public class AuthorServiceImpl implements AuthorService {
 
     private final AuthorRepository authorRepository;
-    private final BookRepository bookRepository;
-    private final LendingServiceClient lendingServiceClient;
-    private final BookService bookService;
+    private final MessagePublisher sender;
 
 
-    public AuthorServiceImpl(AuthorRepository authorRepository, BookRepository bookRepository, LendingServiceClient lendingServiceClient, BookService bookService) {
+    public AuthorServiceImpl(AuthorRepository authorRepository, MessagePublisher sender) {
         this.authorRepository = authorRepository;
-        this.bookRepository = bookRepository;
-        this.lendingServiceClient = lendingServiceClient;
-        this.bookService = bookService;
+        this.sender = sender;
     }
 
     @Override
-    public Author create(CreateAuthorRequest request, UUID authorID) {
+    public Author create(CreateAuthorRequest request) {
         if (request.getBiography() == null || request.getBiography().length() > 4096) {
             throw new IllegalArgumentException("The biography cannot be null, nor have more than 4096 characters.");
         }
@@ -45,7 +40,12 @@ public class AuthorServiceImpl implements AuthorService {
 
         final Author author = new Author(request.getName(), request.getBiography());
         author.setUniqueAuthorID();
-        return authorRepository.save(author);
+
+        authorRepository.save(author);
+
+        sender.publishAuthorCreated(author);
+
+        return author;
     }
 
 //    @Override

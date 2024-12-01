@@ -74,9 +74,8 @@ public class AuthorController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Author> create(HttpServletRequest HTTPRequest,
                                          @Valid @RequestBody final CreateAuthorRequest request) {
-        UUID authorID = helper.getUserByToken(HTTPRequest);
 
-        final var author = authorService.create(request, authorID);
+        final var author = authorService.create(request);
         return ResponseEntity.ok().eTag(Long.toString(author.getVersion())).body(author);
     }
 

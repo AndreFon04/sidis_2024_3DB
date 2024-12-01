@@ -14,26 +14,27 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class MessageConsumer {
     private static final Logger logger = LoggerFactory.getLogger(MessageConsumer.class);
     private final AuthorRepository repository;
-    private final AuthorViewMapper authorViewMapper;
-    private final AuthorService authorService;
 
-    @RabbitListener(queues = "#{authQueue.name}")
-    public void notify(AuthorView authorView, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String event) {
+
+    @RabbitListener(queues = "#{authorQueue.name}")
+    public void notify(Author author, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String event) {
         logger.info("<-- Received {}", event);
 
         switch (event) {
             case "author.created", "author.updated":
-                logger.info("Received author with id: {}", authorView.getAuthorID());
-                if(repository.existsById(authorView.getAuthorId())) {
-                    repository.deleteById(authorView.getAuthorId());
+                logger.info("Received author with id: {}", author.getAuthorID());
+                if(repository.findByAuthorID(author.getAuthorID()).isEmpty()) {
+                    // restart static internal ID
+                    author.initCounter(author.getAuthorID());
+                    repository.save(author);
                 }
-                Author author = authorViewMapper.toAuthorView1(authorView);
-                repository.save(author);
                 break;
 
             default:

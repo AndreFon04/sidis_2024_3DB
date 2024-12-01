@@ -2,11 +2,10 @@ package org.sidis.book.command.repositories;
 
 import org.sidis.book.command.model.Author;
 import org.sidis.book.command.model.Book;
-import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+
 
 public interface AuthorRepository {
 

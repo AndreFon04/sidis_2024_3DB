@@ -1,6 +1,7 @@
 package org.sidis.book.command.message_broker;
 
 import org.sidis.book.command.api.AuthorView;
+import org.sidis.book.command.model.Author;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.FanoutExchange;
@@ -19,12 +20,12 @@ public class MessagePublisher {
     @Autowired
     private FanoutExchange fanout;
 
-    public void publishAuthorCreated(AuthorView author) {
+    public void publishAuthorCreated(Author author) {
         template.convertAndSend(fanout.getName(), "author.created", author);
         logger.info("Sent author.created --> ");
     }
 
-    public void publishAuthorUpdated(AuthorView author) {
+    public void publishAuthorUpdated(Author author) {
         template.convertAndSend(fanout.getName(), "author.updated", author);
         logger.info("Sent author.updated --> ");
     }

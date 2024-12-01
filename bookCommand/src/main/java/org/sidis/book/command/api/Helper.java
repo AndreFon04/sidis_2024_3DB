@@ -6,23 +6,20 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.stereotype.Component;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.UUID;
 
 
 @Component
 public class Helper {
 
-
     @Autowired
     private JwtDecoder jwtDecoder;
 
-    public UUID getUserByToken(HttpServletRequest request){
+    public String getUserByToken(HttpServletRequest request){
         String token = request.getHeader("Authorization");
         String newToken = token.replace("Bearer ", "");
         Jwt dToken = this.jwtDecoder.decode(newToken);
         String s = (String) dToken.getClaims().get("sub");
 
-        return UUID.fromString(s.split(",")[0]);
+        return s.split(",")[0];
     }
-
 }

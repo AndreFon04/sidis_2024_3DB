@@ -5,7 +5,6 @@ import org.sidis.book.command.model.CoAuthorDTO;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 
 public interface AuthorService {
@@ -14,7 +13,7 @@ public interface AuthorService {
 //
 //    Optional<Author> findByAuthorID(String authorID);
 
-    Author create(CreateAuthorRequest request, UUID authorID);
+    Author create(CreateAuthorRequest request);
 
     Author partialUpdate(String authorID, EditAuthorRequest request, long parseLong);
 

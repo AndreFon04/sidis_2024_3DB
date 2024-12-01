@@ -19,6 +19,15 @@ public class Config {
         return new FanoutExchange("author.fanout");
     }
 
+
+    @Bean
+    public Queue authorQueue(){return new AnonymousQueue();}
+
+    @Bean
+    public Binding authorBinding() {
+        return BindingBuilder.bind(authorQueue()).to(fanout());
+    }
+
     @Bean
     public MessageConverter converter(){
         ObjectMapper dateMapper = new ObjectMapper().registerModule(new JavaTimeModule());
