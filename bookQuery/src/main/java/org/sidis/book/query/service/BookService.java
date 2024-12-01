@@ -2,9 +2,6 @@ package org.sidis.book.query.service;
 
 import org.sidis.book.query.model.Book;
 import org.sidis.book.query.model.BookCountDTO;
-import org.sidis.book.query.model.Genre;
-import org.sidis.book.query.service.CreateBookRequest;
-import org.sidis.book.query.service.EditBookRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

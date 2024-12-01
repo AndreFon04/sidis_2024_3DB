@@ -1,7 +1,6 @@
-package org.sidis.userservice.client;
+package org.sidis.user.query.client;
 
-import org.sidis.userservice.model.Reader;
-import org.sidis.userservice.model.User;
+import org.sidis.user.query.model.Reader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,25 +8,21 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
-import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+
 
 @Service
 public class ReaderServiceClient {
 
-    @Value("${reader.otherinstance.url}")
-    private String userOtherInstanceUrl;
+//    @Value("${reader.otherinstance.url}")
+//    private String userOtherInstanceUrl;
 
     private static final Logger log = LoggerFactory.getLogger(ReaderServiceClient.class);
     private final RestTemplate restTemplate;
@@ -54,30 +49,30 @@ public class ReaderServiceClient {
 
             HttpEntity<Reader> entity = new HttpEntity<>(reader, headers);
 
-            ResponseEntity<Reader> response = restTemplate.postForEntity(userOtherInstanceUrl + "/api/readers/internal", entity, Reader.class);
-
-            if (response.getStatusCode() == HttpStatus.OK) {
-                log.info("Replicação bem-sucedida para a instância secundária.");
-            } else {
-                log.warn("Replicação falhou com código de status: " + response.getStatusCode());
-            }
+//            ResponseEntity<Reader> response = restTemplate.postForEntity(userOtherInstanceUrl + "/api/readers/internal", entity, Reader.class);
+//
+//            if (response.getStatusCode() == HttpStatus.OK) {
+//                log.info("Replicação bem-sucedida para a instância secundária.");
+//            } else {
+//                log.warn("Replicação falhou com código de status: " + response.getStatusCode());
+//            }
         } catch (Exception e) {
             log.warn("Falha ao replicar o Reader para a instância secundária. Erro: " + e.getMessage());
             // Exceção capturada para que o erro de replicação não interrompa o fluxo principal
         }
     }
 
-    public void saveUser(User user) {
-        try{
-            ResponseEntity<User[]> response = restTemplate.postForEntity(userOtherInstanceUrl + "/api/admin/user/internal", user, User[].class);
-
-            if (response.getStatusCode() == HttpStatus.OK) {
-                return ;
-            } else {
-                throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Instância alternativa do user-service está indisponível: " + userOtherInstanceUrl);
-            }
-        } catch (Exception e) {
-            log.warn(e.getMessage());
-        }
-    }
+//    public void saveUser(User user) {
+//        try{
+//            ResponseEntity<User[]> response = restTemplate.postForEntity(userOtherInstanceUrl + "/api/admin/user/internal", user, User[].class);
+//
+//            if (response.getStatusCode() == HttpStatus.OK) {
+//                return ;
+//            } else {
+//                throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Instância alternativa do user-service está indisponível: " + userOtherInstanceUrl);
+//            }
+//        } catch (Exception e) {
+//            log.warn(e.getMessage());
+//        }
+//    }
 }

@@ -9,8 +9,8 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <artifactId>bookCommand</artifactId>
-    <description>API to handle book creation, updates and removals</description>
+    <artifactId>userCommand</artifactId>
+    <description>API to handle user creation, updates and removals</description>
 
     <properties>
         <java.version>17</java.version>
