@@ -37,6 +37,8 @@ public class MessagePublisher {
 
 
     public void publishBookCreated(Book book) {
+        System.out.println(book.getTitle() + "|" + book.getGenre() + "|" + book.getDescription() + "|" + book.getIsbn() +
+                "|" + book.getBookImage() + "|" + book.getAuthor());
         template.convertAndSend(fanoutBook.getName(), "book.created", book);
         logger.info("Sent book.created --> ");
     }

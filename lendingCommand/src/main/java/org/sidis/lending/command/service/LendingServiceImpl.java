@@ -44,17 +44,6 @@ public class LendingServiceImpl implements LendingService {
     }
 
     @Override
-    public Iterable<Lending> findAll() {
-        return lendingRepository.findAll();
-    }
-
-    @Override
-    public Optional<Lending> findById(int id1, int id2) {
-        String lendingID = id1 + "/" + id2;
-        return lendingRepository.findByLendingID(lendingID);
-    }
-
-    @Override
     public Optional<String> findReaderByLendingID(String lendingID) {
         // Corrigido para retornar apenas o ID do leitor
         return lendingRepository.findReaderByLendingID(lendingID);

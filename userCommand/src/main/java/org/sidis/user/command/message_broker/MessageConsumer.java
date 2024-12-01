@@ -30,6 +30,7 @@ public class MessageConsumer {
             if (userRepository.findById(user.getId()).isEmpty()) {
                 // restart static internal ID
                 userRepository.save(user);
+                logger.info("User save reached");
             }
         } else {
             logger.warn("/!\\ Unhandled event type: {}", event);
@@ -46,6 +47,7 @@ public class MessageConsumer {
                 if(readerRepository.findByReaderID(reader.getReaderID()).isEmpty()) {
                     reader.initCounter(reader.getReaderID());
                     readerRepository.save(reader);
+                    logger.info("Reader save reached");
                 }
                 break;
 
