@@ -9,11 +9,6 @@ import org.sidis.book.query.model.Book;
 import org.sidis.book.query.model.CoAuthorDTO;
 import org.sidis.book.query.model.TopAuthorLendingDTO;
 import org.sidis.book.query.repositories.AuthorRepository;
-import org.sidis.book.query.repositories.BookRepository;
-import org.sidis.book.query.service.AuthorService;
-import org.sidis.book.query.service.BookService;
-import org.sidis.book.query.service.CreateAuthorRequest;
-import org.sidis.book.query.service.EditAuthorRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -26,29 +21,13 @@ import java.util.stream.Collectors;
 public class AuthorServiceImpl implements AuthorService {
 
     private final AuthorRepository authorRepository;
-
     private final LendingServiceClient lendingServiceClient;
-
     private final BookService bookService;
 
     public AuthorServiceImpl(AuthorRepository authorRepository, LendingServiceClient lendingServiceClient, BookService bookService) {
         this.authorRepository = authorRepository;
         this.lendingServiceClient = lendingServiceClient;
         this.bookService = bookService;
-    }
-
-    @Override
-    public Author create(CreateAuthorRequest request, UUID authorID) {
-        if (request.getBiography() == null || request.getBiography().length() > 4096) {
-            throw new IllegalArgumentException("The biography cannot be null, nor have more than 4096 characters.");
-        }
-        if (request.getName() == null || request.getName().length() > 150) {
-            throw new IllegalArgumentException("The name cannot be null, nor have more than 150 characters.");
-        }
-
-        final Author author = new Author(request.getName(), request.getBiography());
-        author.setUniqueAuthorID();
-        return authorRepository.save(author);
     }
 
     @Override
@@ -59,15 +38,6 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public Optional<Author> findByAuthorID(String authorID) {
         return authorRepository.findByAuthorID(authorID);
-    }
-
-    @Override
-    public Author partialUpdate(final String authorID, final EditAuthorRequest request, final long desiredVersion) {
-        final var author = authorRepository.findByAuthorID(authorID)
-                .orElseThrow(() -> new NotFoundException("Cannot update an object that does not yet exist"));
-
-        author.applyPatch(desiredVersion, request.getName(), request.getBiography());
-        return authorRepository.save(author);
     }
 
 

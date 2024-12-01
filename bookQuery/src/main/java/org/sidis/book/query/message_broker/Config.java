@@ -1,4 +1,4 @@
-package org.sidis.book.command.message_broker;
+package org.sidis.book.query.message_broker;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;

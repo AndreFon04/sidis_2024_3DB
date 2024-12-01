@@ -35,54 +35,6 @@ public class BookServiceImpl implements BookService {
         this.lendingServiceClient = lendingServiceClient;
     }
 
-    public Book create(CreateBookRequest request) {
-        String isbn = request.getIsbn();
-        Book book = new Book();
-        if (!book.isValidIsbn(isbn)) {
-            throw new IllegalArgumentException("Invalid ISBN");
-        }
-
-        // Fetch the Genre entity
-        Genre genre = genreRepository.findByInterest(request.getGenre());
-        if (genre == null) {
-            throw new NotFoundException("Genre not found");
-        }
-
-        // Fetch the Author entities
-        List<Author> authors = new ArrayList<>();
-        for (String authorId : request.getAuthorIds()) {
-            Author author = authorRepository.findByAuthorID(authorId)
-                    .orElseThrow(() -> new NotFoundException("Author not found with ID: " + authorId));
-            if (author.getAuthorID() == null) {
-                author = authorRepository.save(author);
-            }
-            authors.add(author);
-        }
-
-        // Fetch the BookImage entity
-        BookImage bookImage = bookImageRepository.findById(request.getBookImageId())
-                .orElseThrow(() -> new NotFoundException("Book image not found"));
-
-        // Create and save the new Book entity
-        Book newBook = new Book();
-        newBook.setIsbn(isbn);
-        newBook.setTitle(request.getTitle());
-        newBook.setGenre(genre);
-        newBook.setDescription(request.getDescription());
-        newBook.setAuthor(authors); // Set the list of authors
-        newBook.setBookImage(bookImage);
-
-        bookRepository.save(newBook);
-        return newBook;
-    }
-
-
-    @Override
-    public boolean isBookIDUnique(Long bookID) {
-        // Check if readerID already exists
-        return bookRepository.findBookByBookID(bookID).isEmpty();
-    }
-
     @Override
     public Optional<Book> getBookById(final Long bookID) {
         Optional<Book> book = bookRepository.findBookByBookID(bookID);
@@ -129,7 +81,6 @@ public class BookServiceImpl implements BookService {
         return a;
     }
 
-
     @Override
     public Optional<Book> getBookByIsbn(final String isbn) {
         return bookRepository.findByIsbn(isbn);
@@ -138,11 +89,6 @@ public class BookServiceImpl implements BookService {
     @Override
     public List<Book> getBookByGenre(final String genre) {
         return bookRepository.findByGenre(genre);
-    }
-
-    @Override
-    public Genre getGenreByInterest(String interest) {
-        return genreRepository.findByInterest(interest);
     }
 
     @Override
@@ -169,44 +115,9 @@ public class BookServiceImpl implements BookService {
                 .collect(Collectors.toList());
     }
 
-
     @Override
     public List<Book> getBooksByAuthorId(String authorID) {
         return bookRepository.findByAuthorId(authorID);
-    }
-
-    public void addImageToBook(Long bookID, byte[] image, String contentType) {
-        Book book = bookRepository.findBookByBookID(bookID)
-                .orElseThrow(() -> new NotFoundException("Book not found"));
-
-        saveBookWithImage(book, image, contentType);
-    }
-
-
-
-    public void saveBookWithImage(Book book, byte[] image, String contentType) {
-        Book savedBook = bookRepository.save(book); // Salva o livro no banco de dados
-
-        BookImage bookImage = new BookImage();
-        bookImage.setBook(savedBook); // Associa a imagem ao livro salvo
-        bookImage.setImage(image);
-        bookImage.setContentType(contentType);
-
-        bookImageRepository.save(bookImage); // Salva a imagem no banco de dados
-    }
-
-    @Override
-    public Book partialUpdate(final Long bookID, final EditBookRequest request, final long desiredVersion) {
-        var existingBook = getBookById(bookID).orElseThrow(() -> new NotFoundException("Cannot update an object that does not yet exist"));
-
-        Genre genre = genreRepository.findByInterest(request.getGenre());
-        if (genre == null) {
-            throw new NotFoundException("Genre not found");
-        }
-
-        existingBook.applyPatch(desiredVersion, request.getTitle(), genre, request.getDescription());
-        bookRepository.save(existingBook);
-        return existingBook;
     }
 
     @Override
@@ -225,6 +136,4 @@ public class BookServiceImpl implements BookService {
                 .map(entry -> new BookCountDTO(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
     }
-
-
 }

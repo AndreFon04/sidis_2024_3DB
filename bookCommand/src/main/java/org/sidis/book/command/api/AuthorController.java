@@ -37,37 +37,15 @@ public class AuthorController {
     private static final String IF_MATCH = "If-Match";
 
     private final AuthorServiceImpl authorService;
-    private final Helper helper;
 
     private static final Logger logger = LoggerFactory.getLogger(AuthorController.class);
 
 
     @Autowired
-    public AuthorController(AuthorServiceImpl authorService, Helper helper, BookServiceImpl bookService, BookViewMapper bookViewMapper, AuthorViewMapper authorViewMapper) {
+    public AuthorController(AuthorServiceImpl authorService) {
         this.authorService = authorService;
-        this.helper = helper;
     }
 
-//    @Operation(summary = "Gets a specific Author by Name")
-//    @GetMapping(value = "/name/{name}")
-//    public List<AuthorView> findByName(
-//            @PathVariable("name") @Parameter(description = "The Name of the Author to find") final String name) {
-//        List<Author> authors = authorService.findByName(name);
-//        return authors.stream().map(authorViewMapper::toAuthorView).toList();
-//    }
-//
-//    @Operation(summary = "Gets a specific Author by id")
-//    @GetMapping(value = "/id/{id1}/{id2}")
-//    public ResponseEntity<AuthorView> findByAuthorID(
-//            @PathVariable("id1") @Parameter(description = "The id of the author to find") final String id1,
-//            @PathVariable("id2") final String id2) {
-//        String authorID = id1 + "/" + id2;
-//        final var author = authorService.findByAuthorID(authorID).orElseThrow(() -> new NotFoundException(Author.class, authorID));
-//        AuthorView authorView = authorViewMapper.toAuthorView(author);
-//        authorView.setImageUrl(authorService.getAuthorImageUrl(authorID));
-//        System.out.println("Author ID: " + authorID + " Image URL: " + authorView.getImageUrl());
-//        return ResponseEntity.ok(authorView);
-//    }
 
     @Operation(summary = "Creates a new Author")
     @PostMapping
@@ -105,26 +83,5 @@ public class AuthorController {
         }
         return Long.parseLong(ifMatchHeader);
     }
-
-
-    //SprintB
-    //SprintB
-    //SprintB
-    //SprintB
-
-//    @Operation(summary = "Get coauthors")
-//    @GetMapping("/coauthors/{id1}/{id2}/")
-//    public ResponseEntity<List<CoAuthorDTO>> getCoAuthorsAndBooks(@PathVariable String id1, @PathVariable String id2) {
-//        String authorId = id1 + "/" + id2;
-//
-//        List<CoAuthorDTO> coAuthors = authorService.getCoAuthorsAndBooks(authorId);
-//        return ResponseEntity.ok(coAuthors);
-//    }
-//
-//    @GetMapping("/top5Authors")
-//    public List<TopAuthorLendingDTO> getTop5Authors() {
-//        return authorService.findTop5AuthorsPerLending();
-//    }
-
 }
 

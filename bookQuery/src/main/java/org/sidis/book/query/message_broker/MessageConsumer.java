@@ -1,10 +1,10 @@
-package org.sidis.book.command.message_broker;
+package org.sidis.book.query.message_broker;
 
-import org.sidis.book.command.model.Author;
-import org.sidis.book.command.model.Book;
-import org.sidis.book.command.repositories.AuthorRepository;
-import org.sidis.book.command.repositories.BookRepository;
 import lombok.RequiredArgsConstructor;
+import org.sidis.book.query.model.Author;
+import org.sidis.book.query.model.Book;
+import org.sidis.book.query.repositories.AuthorRepository;
+import org.sidis.book.query.repositories.BookRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -12,11 +12,9 @@ import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
 
-
 @Service
 @RequiredArgsConstructor
 public class MessageConsumer {
-
     private static final Logger logger = LoggerFactory.getLogger(MessageConsumer.class);
     private final AuthorRepository repository;
     private final BookRepository bookRepository;

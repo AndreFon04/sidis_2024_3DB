@@ -1,8 +1,8 @@
 package org.sidis.book.command.service;
 
-import org.sidis.book.command.client.LendingDTO;
 import org.sidis.book.command.client.LendingServiceClient;
 import org.sidis.book.command.exceptions.NotFoundException;
+import org.sidis.book.command.message_broker.MessagePublisher;
 import org.sidis.book.command.model.*;
 import org.sidis.book.command.repositories.AuthorRepository;
 import org.sidis.book.command.repositories.BookImageRepository;
@@ -11,26 +11,25 @@ import org.sidis.book.command.repositories.GenreRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 @Service
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
-
     private final BookImageRepository bookImageRepository;
-
     private final AuthorRepository authorRepository;
-
     private final LendingServiceClient lendingServiceClient;
+    private final GenreRepository genreRepository;
+    private final MessagePublisher sender;
 
-    public BookServiceImpl(BookRepository bookRepository, BookImageRepository bookImageRepository, GenreRepository genreRepository, AuthorRepository authorRepository, LendingServiceClient lendingServiceClient) {
+    public BookServiceImpl(BookRepository bookRepository, BookImageRepository bookImageRepository, GenreRepository genreRepository, AuthorRepository authorRepository, LendingServiceClient lendingServiceClient, MessagePublisher sender) {
         this.bookRepository = bookRepository;
         this.bookImageRepository = bookImageRepository;
         this.genreRepository = genreRepository;
         this.authorRepository = authorRepository;
         this.lendingServiceClient = lendingServiceClient;
+        this.sender = sender;
     }
 
     public Book create(CreateBookRequest request) {
@@ -71,14 +70,9 @@ public class BookServiceImpl implements BookService {
         newBook.setBookImage(bookImage);
 
         bookRepository.save(newBook);
+        sender.publishBookCreated(newBook);
+
         return newBook;
-    }
-
-
-    @Override
-    public boolean isBookIDUnique(Long bookID) {
-        // Check if readerID already exists
-        return bookRepository.findBookByBookID(bookID).isEmpty();
     }
 
     @Override
@@ -119,81 +113,6 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<Book> getAll() {
-        System.out.println("BookServiceImpl getAll()");
-        //return bookRepository.findAll();
-        final List<Book> a = bookRepository.findAll();
-        System.out.println("BookServiceImpl bookRepository.findAll() result: " + a.size() + " " + a.get(0).getTitle());
-        return a;
-    }
-
-
-    @Override
-    public Optional<Book> getBookByIsbn(final String isbn) {
-        return bookRepository.findByIsbn(isbn);
-    }
-
-    @Override
-    public List<Book> getBookByGenre(final String genre) {
-        return bookRepository.findByGenre(genre);
-    }
-
-    @Override
-    public Genre getGenreByInterest(String interest) {
-        return genreRepository.findByInterest(interest);
-    }
-
-    @Override
-    public List<Book> getBookByTitle(final String title) {
-        return bookRepository.findByTitle(title);
-    }
-
-    private GenreRepository genreRepository;
-
-    @Override
-    public List<Map.Entry<String, Long>> findTop5Genres() {
-        List<Genre> genres = genreRepository.findAll();
-        Map<String, Long> genreBookCount = new HashMap<>();
-
-        for (Genre genre : genres) {
-            long count = genre.getBooks().size();
-            genreBookCount.put(genre.getInterest(), count);
-        }
-
-        return genreBookCount.entrySet()
-                .stream()
-                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
-                .limit(5)
-                .collect(Collectors.toList());
-    }
-
-
-    @Override
-    public List<Book> getBooksByAuthorId(String authorID) {
-        return bookRepository.findByAuthorId(authorID);
-    }
-
-    public void addImageToBook(Long bookID, byte[] image, String contentType) {
-        Book book = bookRepository.findBookByBookID(bookID)
-                .orElseThrow(() -> new NotFoundException("Book not found"));
-
-        saveBookWithImage(book, image, contentType);
-    }
-
-
-
-    public void saveBookWithImage(Book book, byte[] image, String contentType) {
-        Book savedBook = bookRepository.save(book); // Salva o livro no banco de dados
-
-        BookImage bookImage = new BookImage();
-        bookImage.setBook(savedBook); // Associa a imagem ao livro salvo
-        bookImage.setImage(image);
-        bookImage.setContentType(contentType);
-
-        bookImageRepository.save(bookImage); // Salva a imagem no banco de dados
-    }
-
-    @Override
     public Book partialUpdate(final Long bookID, final EditBookRequest request, final long desiredVersion) {
         var existingBook = getBookById(bookID).orElseThrow(() -> new NotFoundException("Cannot update an object that does not yet exist"));
 
@@ -204,25 +123,8 @@ public class BookServiceImpl implements BookService {
 
         existingBook.applyPatch(desiredVersion, request.getTitle(), genre, request.getDescription());
         bookRepository.save(existingBook);
+        sender.publishBookUpdated(existingBook);
+
         return existingBook;
     }
-
-    @Override
-    public List<BookCountDTO> findTop5Books() {
-        List<LendingDTO> lendings = lendingServiceClient.getAllLendings();
-
-        Map<Long, Long> bookIdCounts = lendings.stream()
-                .collect(Collectors.groupingBy(LendingDTO::getBookID, Collectors.counting()));
-
-        List<Map.Entry<Long, Long>> top5Books = bookIdCounts.entrySet().stream()
-                .sorted(Map.Entry.<Long, Long>comparingByValue().reversed())
-                .limit(5)
-                .collect(Collectors.toList());
-
-        return top5Books.stream()
-                .map(entry -> new BookCountDTO(entry.getKey(), entry.getValue()))
-                .collect(Collectors.toList());
-    }
-
-
 }
