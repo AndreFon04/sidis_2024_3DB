@@ -21,6 +21,11 @@
         <module>lending-service</module>
         <module>user-service</module>
         <module>bookCommand</module>
+        <module>bookQuery</module>
+        <module>userCommand</module>
+        <module>userQuery</module>
+        <module>lendingCommand</module>
+        <module>lendingQuery</module>
     </modules>
 
     <properties>
