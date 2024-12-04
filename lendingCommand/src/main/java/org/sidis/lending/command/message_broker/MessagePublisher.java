@@ -33,4 +33,20 @@ public class MessagePublisher {
         template.convertAndSend(fanoutLending.getName(), "lending.updated", lending);
         logger.info("Sent lending.updated --> ");
     }
+
+    public String askBookISBNbyID(Long bookID){
+        logger.info("Sending book query: " + bookID + " --> ");
+//        BookQueryResponse response = (BookQueryResponse) template.convertSendAndReceive("book.query.queue", bookID);
+//        BookQueryResponse response = new BookQueryResponse();
+        String isbn = (String) template.convertSendAndReceive("book.query.queue", bookID);
+//        if (response == null) {throw new AmqpReplyTimeoutException("No response from BookQuery", bookID);}
+
+        logger.info("<-- Received book ISBN: " + isbn);
+        return isbn;
+    }
+
+    public boolean askReaderValidbyReaderID(String readerID){
+        return true;
+    }
+
 }

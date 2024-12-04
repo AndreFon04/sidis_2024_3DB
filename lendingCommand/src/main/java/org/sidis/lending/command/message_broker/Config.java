@@ -22,9 +22,19 @@ public class Config {
     @Bean
     public Queue lendingQueue(){return new AnonymousQueue();}
 
+    @Bean
+    public Queue bookQueryQueue(){return new Queue("book.query.queue", true);}
+
+
+    @Bean
+    public DirectExchange exchangeBook() {return new DirectExchange("lending.exchange");}
+
 
     @Bean
     public Binding lendingBinding() {return BindingBuilder.bind(lendingQueue()).to(fanoutLending());}
+
+    @Bean
+    public Binding bookQueryBinding() {return BindingBuilder.bind(bookQueryQueue()).to(exchangeBook()).with("book.query.routingkey");}
 
     @Bean
     public MessageConverter converter(){

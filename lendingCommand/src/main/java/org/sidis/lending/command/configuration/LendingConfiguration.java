@@ -1,4 +1,4 @@
-package org.sidis.lending.command.config;
+package org.sidis.lending.command.configuration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;

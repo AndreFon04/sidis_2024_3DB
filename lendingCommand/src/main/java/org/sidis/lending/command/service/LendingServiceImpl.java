@@ -1,6 +1,7 @@
 package org.sidis.lending.command.service;
 
 import org.sidis.lending.command.exceptions.NotFoundException;
+import org.sidis.lending.command.message_broker.MessagePublisher;
 import org.sidis.lending.command.model.Lending;
 import org.sidis.lending.command.repositories.LendingRepository;
 import org.sidis.lending.command.service.EditLendingRequest;
@@ -25,6 +26,7 @@ public class LendingServiceImpl implements LendingService {
     private LendingRepository lendingRepository;
     private RestTemplate restTemplate;
     private ExternalServiceHelper externalServiceHelper;
+    private MessagePublisher messagePublisher;
 
 //    @Value("${server.port}")
 //    private String currentPort; // Porta da instância atual
@@ -36,10 +38,11 @@ public class LendingServiceImpl implements LendingService {
 //    private String lendingInstance2Url;
 
     @Autowired
-    public LendingServiceImpl(LendingRepository lendingRepository, RestTemplate restTemplate, ExternalServiceHelper externalServiceHelper) {
+    public LendingServiceImpl(LendingRepository lendingRepository, RestTemplate restTemplate, ExternalServiceHelper externalServiceHelper, MessagePublisher messagePublisher) {
         this.lendingRepository = lendingRepository;
         this.restTemplate = restTemplate;
         this.externalServiceHelper = externalServiceHelper;
+        this.messagePublisher = messagePublisher;
         System.out.println("LendingServiceImpl created with ExternalServiceHelper: " + (externalServiceHelper != null));
     }
 
@@ -60,21 +63,24 @@ public class LendingServiceImpl implements LendingService {
 
     @Override
     public Lending create(CreateLendingRequest request) {
-        Long bookID = externalServiceHelper.getBookIDFromService(request.getBookID());
+        String isbn = messagePublisher.askBookISBNbyID(request.getBookID());
 
-        String readerID = request.getReaderID(); // Exemplo: "2024/3"
-        String[] readerParts = readerID.split("/"); // Dividir o readerID em duas partes
-        String id1 = readerParts[0];
-        String id2 = readerParts[1];
+        if (isbn == null) {
+            throw new NotFoundException("Book not found");
+        }
 
-        String readerIDResult = externalServiceHelper.getReaderIDFromService(id1, id2);
+        boolean validReaderID = messagePublisher.askReaderValidbyReaderID(request.getReaderID());
 
-        boolean hasOverdueLending = lendingRepository.existsByReaderIDAndOverdueTrue(readerIDResult);
+        if (!validReaderID) {
+            throw new NotFoundException("Reader ID not found");
+        }
+
+        boolean hasOverdueLending = lendingRepository.existsByReaderIDAndOverdueTrue(request.getReaderID());
         if (hasOverdueLending) {
             throw new IllegalArgumentException("Reader has overdue lending and cannot borrow more books.");
         }
 
-        long activeLendingsCount = lendingRepository.countActiveLendingsByReaderID(readerIDResult);
+        long activeLendingsCount = lendingRepository.countActiveLendingsByReaderID(request.getReaderID());
         if (activeLendingsCount >= 3) {
             throw new IllegalArgumentException("Reader already has the maximum number of active lendings (3).");
         }
@@ -82,28 +88,13 @@ public class LendingServiceImpl implements LendingService {
         LocalDate startDate = LocalDate.now();
         LocalDate expectedReturnDate = startDate.plusDays(14); // Exemplo de prazo de devolução
 
-        Lending lending = new Lending(bookID, readerIDResult, startDate, null, expectedReturnDate, false, 0);
+        Lending lending = new Lending(request.getBookID(), request.getReaderID(), startDate, null, expectedReturnDate, false, 0);
         lending.updateOverdueStatus();
         Lending savedLending = lendingRepository.save(lending); // Guardar na instância atual
 
-        // Sincronizar com a outra instância via HTTP POST (se aplicável)
-//        String otherInstanceUrl = getOtherInstanceUrl();
-//        try {
-//            restTemplate.postForEntity(otherInstanceUrl + "/api/lendings/sync", savedLending, Lending.class);
-//        } catch (Exception e) {
-//            System.err.println("Erro ao sincronizar o lending com a outra instância: " + e.getMessage());
-//        }
         return savedLending;
     }
 
-//    // Método para determinar a URL da outra instância
-//    public String getOtherInstanceUrl() {
-//        if (currentPort.equals("8084")) {
-//            return lendingInstance2Url; // Se estiver na instância 1, sincroniza com a instância 2
-//        } else {
-//            return lendingInstance1Url; // Se estiver na instância 2, sincroniza com a instância 1
-//        }
-//    }
 
     @Override
     public Lending partialUpdate(int id1, int id2, EditLendingRequest resource, long desiredVersion) {

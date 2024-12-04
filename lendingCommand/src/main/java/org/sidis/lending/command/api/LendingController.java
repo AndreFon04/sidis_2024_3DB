@@ -41,6 +41,7 @@ public class LendingController {
     @Operation(summary = "Creates a new lending")
     @PostMapping
     public ResponseEntity<LendingView> create(@RequestBody @Valid CreateLendingRequest request) {
+        System.out.println("entered post lending: " + request.getReaderID() + ", " + request.getBookID());
         final var lending = service.create(request);
         return ResponseEntity.ok(lendingViewMapper.toLendingView(lending));
     }

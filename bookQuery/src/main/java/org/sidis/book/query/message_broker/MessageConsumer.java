@@ -8,9 +8,12 @@ import org.sidis.book.query.repositories.BookRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +21,7 @@ public class MessageConsumer {
     private static final Logger logger = LoggerFactory.getLogger(MessageConsumer.class);
     private final AuthorRepository repository;
     private final BookRepository bookRepository;
+    private final RabbitTemplate rabbitTemplate;
 
     @RabbitListener(queues = "#{authorQueue.name}")
     public void notify(Author author, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String event) {
@@ -54,5 +58,21 @@ public class MessageConsumer {
             default:
                 logger.warn("/!\\ Unhandled event type: {}", event);
         }
+    }
+
+    @RabbitListener(queues = "book.query.queue")
+    public String handleLendingRequest(Long bookID, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String event) {
+        logger.info("<-- Received {}", event);
+        Optional<Book> b = bookRepository.findBookByBookID(bookID);
+        logger.info("Received book request with id: {}", bookID);
+
+//        BookQueryResponse response = new BookQueryResponse();
+        String isbn = null;
+        if (b.isPresent()) {
+            isbn = b.get().getIsbn();
+        }
+
+        logger.info("Sending response with isbn: {} --> ", isbn);
+        return isbn;
     }
 }

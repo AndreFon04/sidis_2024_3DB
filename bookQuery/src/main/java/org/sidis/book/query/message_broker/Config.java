@@ -31,10 +31,21 @@ public class Config {
     public Queue bookQueue(){return new AnonymousQueue();}
 
     @Bean
+    public Queue bookQueryQueue(){return new Queue("book.query.queue", true);}
+
+
+    @Bean
+    public DirectExchange exchangeBook() {return new DirectExchange("lending.exchange");}
+
+
+    @Bean
     public Binding authorBinding() {return BindingBuilder.bind(authorQueue()).to(fanoutAuthor());}
 
     @Bean
     public Binding bookBinding() {return BindingBuilder.bind(bookQueue()).to(fanoutBook());}
+
+    @Bean
+    public Binding bookQueryBinding() {return BindingBuilder.bind(bookQueryQueue()).to(exchangeBook()).with("book.query.routingkey");}
 
     @Bean
     public MessageConverter converter(){

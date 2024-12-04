@@ -1,4 +1,4 @@
-package org.sidis.lending.command.config;
+package org.sidis.lending.command.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,4 +13,3 @@ public class RestTemplateConfig {
         return new RestTemplate();
     }
 }
-
