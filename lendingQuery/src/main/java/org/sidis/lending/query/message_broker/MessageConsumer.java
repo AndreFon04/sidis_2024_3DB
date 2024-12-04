@@ -18,16 +18,24 @@ public class MessageConsumer {
     private static final Logger logger = LoggerFactory.getLogger(MessageConsumer.class);
     private final LendingRepository lendingRepository;
 
-    @RabbitListener(queues = "#{lendingQueue.name}")
+    @RabbitListener(queues = "lending.queue")
     public void notify(Lending lending, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String event) {
         logger.info("<-- Received {}", event);
 
         switch (event) {
             case "lending.created", "lending.updated":
                 logger.info("Received lending with id: {}", lending.getLendingID());
+                System.out.println("Lending: " + lending.getBookID() + "|" + lending.getReaderID() + "|" +
+                        lending.getStartDate() + "|" + lending.getReturnDate() + "|" + lending.getExpectedReturnDate() +
+                        "|" + lending.getFine() + "|" + lending.getVersion());
                 if(lendingRepository.findByLendingID(lending.getLendingID()).isEmpty()) {
                     // restart static internal ID
-                    lendingRepository.save(lending);
+                    logger.info("About to save lending");
+                    Lending l = new Lending(lending.getBookID(), lending.getReaderID(), lending.getStartDate(),
+                            null, lending.getExpectedReturnDate(), false, 0);
+                    l.updateOverdueStatus();
+                    lendingRepository.save(l);
+                    logger.info("Saved lending");
                 }
                 break;
 

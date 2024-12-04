@@ -21,7 +21,6 @@ public class MessageConsumer {
     private static final Logger logger = LoggerFactory.getLogger(MessageConsumer.class);
     private final AuthorRepository repository;
     private final BookRepository bookRepository;
-    private final RabbitTemplate rabbitTemplate;
 
     @RabbitListener(queues = "#{authorQueue.name}")
     public void notify(Author author, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String event) {

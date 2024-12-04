@@ -27,13 +27,13 @@ public class Genre {
     private Long id;
     private String interest;
 
-    @OneToMany(mappedBy = "genre", orphanRemoval = true,
-            cascade = CascadeType.ALL)
-    private List<Book> books;
+//    @OneToMany(mappedBy = "genre", orphanRemoval = true,
+//            cascade = CascadeType.ALL)
+//    private List<Book> books;
 
     public Genre(String interest) {
         this.interest = interest;
-        this.books = new ArrayList<>();
+//        this.books = new ArrayList<>();
     }
 
     public Genre() {}
@@ -50,11 +50,11 @@ public class Genre {
         this.interest = interest;
     }
 
-    public List<Book> getBooks() {
-        return books;
-    }
-
-    public void setBooks(List<Book> books) {
-        this.books = books;
-    }
+//    public List<Book> getBooks() {
+//        return books;
+//    }
+//
+//    public void setBooks(List<Book> books) {
+//        this.books = books;
+//    }
 }

@@ -35,8 +35,8 @@ public interface SpringDataBookRepository extends BookRepository, CrudRepository
     @Query("SELECT b FROM Book b WHERE LOWER(b.title) LIKE LOWER(CONCAT(:title, '%'))")
     List<Book> findByTitle(@Param("title") String title);
 
-    @Query("SELECT g.interest, COUNT(b) FROM Genre g JOIN g.books b GROUP BY g.interest ORDER BY COUNT(b) DESC LIMIT 5")
-    List<Map.Entry<String, Long>> findTop5Genres();
+//    @Query("SELECT g.interest, COUNT(b) FROM Genre g JOIN g.books b GROUP BY g.interest ORDER BY COUNT(b) DESC LIMIT 5")
+//    List<Map.Entry<String, Long>> findTop5Genres();
 
 
     @Query("SELECT b FROM Book b JOIN b.author a WHERE a.authorID = :authorID")

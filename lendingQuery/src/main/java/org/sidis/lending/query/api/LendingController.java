@@ -30,13 +30,11 @@ public class LendingController {
 
     private final LendingService service;
     private final LendingViewMapper lendingViewMapper;
-    private final LendingRepository lendingRepository;
 
     @Autowired
-    public LendingController(LendingService service, LendingViewMapper lendingViewMapper, LendingRepository lendingRepository) {
+    public LendingController(LendingService service, LendingViewMapper lendingViewMapper) {
         this.service = service;
         this.lendingViewMapper = lendingViewMapper;
-        this.lendingRepository = lendingRepository;
     }
 
     @Operation(summary = "Gets all lendings")
