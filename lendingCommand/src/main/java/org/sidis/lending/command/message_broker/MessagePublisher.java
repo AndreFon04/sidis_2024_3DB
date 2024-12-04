@@ -1,5 +1,6 @@
 package org.sidis.lending.command.message_broker;
 
+import org.sidis.lending.command.exceptions.NotFoundException;
 import org.sidis.lending.command.model.Lending;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +21,6 @@ public class MessagePublisher {
     @Autowired
     private FanoutExchange fanoutLending;
 
-    @Autowired
-    private FanoutExchange fanoutBook;
-
 
     public void publishLendingCreated(Lending lending) {
         template.convertAndSend(fanoutLending.getName(), "lending.created", lending);
@@ -36,10 +34,9 @@ public class MessagePublisher {
 
     public String askBookISBNbyID(Long bookID){
         logger.info("Sending book query: " + bookID + " --> ");
-//        BookQueryResponse response = (BookQueryResponse) template.convertSendAndReceive("book.query.queue", bookID);
-//        BookQueryResponse response = new BookQueryResponse();
+
         String isbn = (String) template.convertSendAndReceive("book.query.queue", bookID);
-//        if (response == null) {throw new AmqpReplyTimeoutException("No response from BookQuery", bookID);}
+        if (isbn == null) {throw new NotFoundException("Book not found");}
 
         logger.info("<-- Received book ISBN: " + isbn);
         return isbn;

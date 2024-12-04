@@ -50,7 +50,6 @@ public class MessageConsumer {
             case "book.created", "book.updated":
                 logger.info("Received book with id: {}", book.getBookID());
                 if(bookRepository.findBookByBookID(book.getBookID()).isEmpty()) {
-//                    author.initCounter(author.getAuthorID());
                     bookRepository.save(book);
                 }
                 break;
@@ -66,7 +65,6 @@ public class MessageConsumer {
         Optional<Book> b = bookRepository.findBookByBookID(bookID);
         logger.info("Received book request with id: {}", bookID);
 
-//        BookQueryResponse response = new BookQueryResponse();
         String isbn = null;
         if (b.isPresent()) {
             isbn = b.get().getIsbn();

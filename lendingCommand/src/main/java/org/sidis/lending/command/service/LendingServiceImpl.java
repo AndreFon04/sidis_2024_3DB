@@ -90,9 +90,12 @@ public class LendingServiceImpl implements LendingService {
 
         Lending lending = new Lending(request.getBookID(), request.getReaderID(), startDate, null, expectedReturnDate, false, 0);
         lending.updateOverdueStatus();
-        Lending savedLending = lendingRepository.save(lending); // Guardar na instância atual
 
-        return savedLending;
+        lendingRepository.save(lending);
+
+        messagePublisher.publishLendingCreated(lending);
+
+        return lending;
     }
 
 
