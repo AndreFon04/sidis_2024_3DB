@@ -1,0 +1,45 @@
+@startuml
+
+actor "Reader" as R
+participant "LendingCommand[1]" as LM1
+participant "Message Broker" as MB
+participant "LendingCommand[2]" as LM2
+participant "BookService" as BM
+participant "UserService" as UM
+
+activate R
+R -> LM1 : POST /lendings (isbn, email)
+activate LM1
+
+
+LM1 -> BM :  getBookById(isbn)
+activate BM
+
+
+BM --> LM1 : book
+deactivate BM
+
+LM1 -> UM :  getUserByEmail(email)
+activate UM
+
+
+UM --> LM1 : reader
+deactivate UM
+
+LM1 -> LM1 : save (isbn, email)
+
+LM1 -> MB : sendLendingCreatedNotification()
+activate MB
+
+LM1 --> R : Success
+deactivate LM1
+deactivate R
+MB -> LM2 : notifyLendingCreated()
+activate LM2
+
+LM2 --> MB : Acknowledge
+deactivate LM2
+
+deactivate MB
+
+@enduml

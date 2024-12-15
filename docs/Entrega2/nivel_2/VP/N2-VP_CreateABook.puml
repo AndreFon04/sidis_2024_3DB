@@ -1,0 +1,32 @@
+@startuml
+
+
+actor "Librarian" as U
+participant "BookCommand[1]" as BM1
+participant "Message Broker" as MB
+participant "BookCommand[2]" as BM2
+
+activate U
+U -> BM1 : POST /book (isbn, title, genre, description)
+activate BM1
+
+BM1 -> BM1 : save (isbn, title, genre, description)
+
+BM1 -> MB : sendBookCreatedNotification()
+activate MB
+
+BM1 --> U: Success
+deactivate U
+deactivate BM1
+
+MB -> BM2 : notifyBookCreated()
+activate BM2
+BM2 --> MB : Acknowledge
+deactivate BM2
+
+deactivate MB
+
+' Adiciona uma nota visível abaixo do diagrama
+footer Todas as User Stories que seguem o padrão POST terão um diagrama deste género.
+
+@enduml

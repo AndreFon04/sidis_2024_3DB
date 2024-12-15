@@ -1,0 +1,30 @@
+@startuml
+
+    actor "Librarian" as U
+participant "BookCommand[1]" as BM1
+participant "Message Broker" as MB
+participant "BookCommand[2]" as BM2
+
+activate U
+U -> BM1 : PATCH /book (isbn, title, genre, description)
+activate BM1
+
+BM1 -> BM1 : update (isbn, title, genre, description)
+
+BM1 -> MB : sendBookUpdatedNotification()
+activate MB
+
+BM1 --> U: Success
+deactivate U
+deactivate BM1
+
+MB -> BM2 : notifyBookUpdated(isbn, title, genre, description)
+activate BM2
+BM2 --> MB : Acknowledge
+deactivate BM2
+
+deactivate MB
+
+footer Todas as User Stories que seguem o padrão PATCH terão um diagrama deste género.
+
+@enduml

@@ -1,0 +1,33 @@
+@startuml
+actor "Reader" as Client
+participant "Router" as Router
+participant "Controller" as Controller
+participant "Service" as Service
+participant "Repo" as Repo
+participant "Domain" as Domain
+participant "Database Handler" as DBHandler
+participant "HTTP API Handler" as APIHandler
+
+activate Client
+
+Client -> Router: GET /book/top5lent
+Router -> Controller: getBooks(top5lent)
+Controller -> Service: getBooks(top5lent)
+Service -> Repo: getBooks(top5lent)
+Repo -> Domain: getBooks(top5lent)
+Domain -> DBHandler: getBooks(top5lent)
+DBHandler -> APIHandler: GET /book/top5lent/internal
+APIHandler --> DBHandler: 200 [books]
+DBHandler --> Domain: 200 [books]
+Domain --> Repo: 200 [books]
+Repo --> Service: 200 [books]
+Service --> Controller: 200 [books]
+Controller --> Router: 200 [books]
+Router --> Client: 200 [books]
+
+note right
+UC que seguem o modelo
+GET  seguem este método
+end note
+
+@enduml
