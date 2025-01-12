@@ -15,6 +15,8 @@ public interface LendingRepository {
     Optional<Lending> findByLendingID(String lendingID);
     void delete(Lending lending);
 
+    Optional<Lending> findBookByISBN(String isbn);
+
     @NotNull Iterable<Lending> findAll();
 
     @NotNull Lending save(@NotNull Lending newLending);

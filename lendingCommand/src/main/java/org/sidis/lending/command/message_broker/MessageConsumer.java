@@ -1,6 +1,8 @@
 package org.sidis.lending.command.message_broker;
 
 import lombok.RequiredArgsConstructor;
+import org.sidis.lending.command.dto.BookDTO;
+import org.sidis.lending.command.dto.BookResponse;
 import org.sidis.lending.command.model.Lending;
 import org.sidis.lending.command.repositories.LendingRepository;
 import org.slf4j.Logger;
@@ -41,4 +43,24 @@ public class MessageConsumer {
                 logger.warn("/!\\ Unhandled event type: {}", event);
         }
     }
+
+    @RabbitListener(queues = "book.query.queue")
+    public void notifyBook(BookDTO bookDTO, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String event) {
+        logger.info("<-- Received {}", event);
+
+        switch (event) {
+            case "book.created":
+                logger.info("Received book with isbn: {}", bookDTO.getIsbn());
+                if(lendingRepository.findBookByISBN(bookDTO.getIsbn()).isEmpty()) {
+                    logger.info("About to save book");
+                    BookDTO b = new BookDTO(bookDTO.getIsbn(), bookDTO.getTitle(), bookDTO.getAuthor(), bookDTO.getGenre(), bookDTO.getDescription());
+                    logger.info("Book saved with isbn: {}", b.getIsbn());
+                }
+                break;
+
+            default:
+                logger.warn("/!\\ Unhandled event type: {}", event);
+        }
+    }
+
 }

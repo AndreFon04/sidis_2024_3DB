@@ -20,6 +20,11 @@ public class Config {
     }
 
     @Bean
+    public FanoutExchange fanoutBookQuery() {
+        return new FanoutExchange("bookQuery.fanout");
+    }
+
+    @Bean
     public Queue lendingQueue(){return new Queue("lending.queue", true);}
 
     @Bean

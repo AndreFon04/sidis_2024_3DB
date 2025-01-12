@@ -475,39 +475,6 @@
 					"name": "Reader Command",
 					"item": [
 						{
-							"name": "Searches any existing Reader by name/email/phone number",
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n  \"page\": {\n    \"number\": 1,\n    \"limit\": 100\n  },\n  \"query\": {\n    \"email\": \"josefinoDasBATATAS@email.com\",\n    \"phoneNumber\": \"\"\n  }\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://localhost:7080/api/readers/search",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "7080",
-									"path": [
-										"api",
-										"readers",
-										"search"
-									]
-								}
-							},
-							"response": []
-						},
-						{
 							"name": "Partially updates an existing reader",
 							"request": {
 								"auth": {
@@ -515,7 +482,7 @@
 									"bearer": [
 										{
 											"key": "token",
-											"value": "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJleGFtcGxlLmlvIiwic3ViIjoiNCxmcmFuY2lzY283N0BtYWlsLmNvbSIsImV4cCI6MTczMzM4NTUyNywiaWF0IjoxNzMzMzQ5NTI3LCJyb2xlcyI6IlJFQURFUiJ9.Q4BQ1K_NU310UlqLjBDkMx4I0cuFRJMatf98mGP8m6Omkh9hwV9pbS45hFpZfDeHrVI6dETVqFedpFkxpC4m2fju3N0-ihqcAnHxyjNtCqaCspmVz5Ui0uyIqxR7aNLn0JpmF50uE8IG1gM1TZ3oaswZrXT4oL1ZqixSe02YN5FKLAw5Ts20R_mcKgNbY5zimJY4kdI6WcgjPFisBuHqaqSopm-YWu2Zt1h0oA4QxqkEQbzrJZut4rz94wu_QyWnlRu3VbRTzPs60R6_OWgamPA1n3iDbYGlohdxuta2JZ4Ol5REJg8C9S75ydYWc4peRJAs18rWSrWHKjsOBkhQ7A",
+											"value": "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJleGFtcGxlLmlvIiwic3ViIjoiNCxmcmFuY2lzY283N0BtYWlsLmNvbSIsImV4cCI6MTczMzQyNDMyNywiaWF0IjoxNzMzMzg4MzI3LCJyb2xlcyI6IlJFQURFUiJ9.Ab8oOwAfyJo1sGYliT_ydNJYCbQ4bkDOf7wxjD21KnjGae9v4p8qbT10EbGCNjU2hqzmCIcvQyU8PHAnwpv-ofP2661fKN4-HdUlKp8SEjdlud6DTygtKYhwmjxhlQsBMN2m4i8pI9th_bsFRHE0RDBhTtKJe9qxT762-o17hRc500NTLCMH_jcHynxTrN6vKoPZlmtSpc4DM_4k6EX7zfv32gU7BVN8KyLBfjL10ADx6iPZ8WjNdS3HK6R-a4f87Ma8bRr0HOh2Ge7YjBVD2Ct7TJHhiKZ3jC2DpkQbtIr3DX7CEzfHc-5kFGVpJt_p1BjjAXgrUVH_sjmvBQb7EA",
 											"type": "string"
 										}
 									]
@@ -524,7 +491,7 @@
 								"header": [
 									{
 										"key": "If-Match",
-										"value": "0",
+										"value": "1",
 										"type": "text"
 									}
 								],
@@ -623,6 +590,39 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "Searches any existing Reader by name/email/phone number",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"page\": {\n    \"number\": 1,\n    \"limit\": 100\n  },\n  \"query\": {\n    \"email\": \"josefinoDasBATATAS@email.com\",\n    \"phoneNumber\": \"\"\n  }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:7080/api/readers/search",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7080",
+									"path": [
+										"api",
+										"readers",
+										"search"
+									]
+								}
+							},
+							"response": []
 						}
 					]
 				},
@@ -636,7 +636,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"name\": \"Teixeira\",\n  \"password\": \"String14\",\n  \"rePassword\": \"String14\",\n  \"email\": \"teixeira6@email.com\",\n  \"birthdate\": \"1815-3-1\",\n  \"phoneNumber\": \"465996287\",\n  \"gdpr\": true,\n  \"interests\": [\n    \"Romance\"\n  ]\n}",
+									"raw": "{\n  \"name\": \"Teixeira\",\n  \"password\": \"String14\",\n  \"rePassword\": \"String14\",\n  \"email\": \"teixeira7@email.com\",\n  \"birthdate\": \"1815-3-1\",\n  \"phoneNumber\": \"465996287\",\n  \"gdpr\": true,\n  \"interests\": [\n    \"Romance\"\n  ]\n}",
 									"options": {
 										"raw": {
 											"language": "json"
