@@ -1,27 +1,46 @@
 @startuml
 
-    actor "Librarian" as U
-participant "BookCommand[1]" as BM1
+actor "Librarian" as U
+participant "BookCommand[w]" as BMW
+participant "BookCommand[i]" as BMI
+participant "Book Query[j]" as BQ
+participant "Lending Command[k]" as LC
+participant "Lending Query[l]" as LQ
+
 participant "Message Broker" as MB
-participant "BookCommand[2]" as BM2
 
-activate U
-U -> BM1 : PATCH /book (isbn, title, genre, description)
-activate BM1
+U -> BMW : PATCH /book (isbn, title, genre,\n\t\t description, author/s)
+activate BMW
 
-BM1 -> BM1 : update (isbn, title, genre, description)
+BMW -> BMW : update (isbn, title, genre,\n\t description, author/s)
 
-BM1 -> MB : sendBookUpdatedNotification()
+BMW -> MB : publishBookUpdated(book)
 activate MB
 
-BM1 --> U: Success
-deactivate U
-deactivate BM1
+BMW --> U: 200
 
-MB -> BM2 : notifyBookUpdated(isbn, title, genre, description)
-activate BM2
-BM2 --> MB : Acknowledge
-deactivate BM2
+MB -> BMW : notify(book)
+deactivate BMW
+
+MB -> BMI : notify(book)
+activate BMI
+BMI --> BMI : save (book)
+deactivate BMI
+
+MB -> BQ : notify(book)
+activate BQ
+BQ --> BQ : save (book)
+deactivate BQ
+
+MB -> LC : notify(book)
+activate LC
+LC --> LC : save (book)
+deactivate LC
+
+MB -> LQ : notify(book)
+activate LQ
+LQ --> LQ : save (book)
+deactivate LQ
 
 deactivate MB
 

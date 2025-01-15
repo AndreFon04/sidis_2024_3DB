@@ -1,0 +1,21 @@
+@startuml
+
+actor "Reader" as U
+participant "BookQuery[w]" as BM1
+participant "Message Broker" as MB
+
+U -> BM1 : GET /book/isbn (isbn)
+activate BM1
+
+BM1 -> MB : requestBookDetails(isbn)
+activate MB
+
+MB --> BM1 : returnBookDetails(isbn, title, genre,\n\t\t\t description, author/s)
+deactivate MB
+
+BM1 --> U: 200
+deactivate BM1
+
+footer Todas as User Stories que seguem o padrão GET terão um diagrama deste género.
+
+@enduml

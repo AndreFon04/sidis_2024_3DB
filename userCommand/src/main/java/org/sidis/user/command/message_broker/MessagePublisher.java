@@ -1,5 +1,6 @@
 package org.sidis.user.command.message_broker;
 
+import org.sidis.user.command.model.ReaderDTO;
 import org.sidis.user.command.model.User;
 import org.sidis.user.command.model.Reader;
 import org.slf4j.Logger;
@@ -30,13 +31,13 @@ public class MessagePublisher {
         logger.info("Sent user.created --> ");
     }
 
-    public void publishReaderCreated(Reader reader) {
-        template.convertAndSend(fanoutReader.getName(), "reader.created", reader);
+    public void publishReaderCreated(ReaderDTO readerDTO) {
+        template.convertAndSend(fanoutReader.getName(), "reader.created", readerDTO);
         logger.info("Sent reader.created --> ");
     }
 
-    public void publishReaderUpdated(Reader reader) {
-        template.convertAndSend(fanoutReader.getName(), "reader.updated", reader);
+    public void publishReaderUpdated(ReaderDTO readerDTO) {
+        template.convertAndSend(fanoutReader.getName(), "reader.updated", readerDTO);
         logger.info("Sent reader.updated --> ");
     }
 }

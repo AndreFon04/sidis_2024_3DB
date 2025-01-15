@@ -6,6 +6,7 @@ import org.sidis.user.command.exceptions.ConflictException;
 import org.sidis.user.command.exceptions.NotFoundException;
 import org.sidis.user.command.message_broker.MessagePublisher;
 import org.sidis.user.command.model.Reader;
+import org.sidis.user.command.model.ReaderDTO;
 import org.sidis.user.command.model.User;
 import org.sidis.user.command.repositories.ReaderRepository;
 import org.sidis.user.command.repositories.UserRepository;
@@ -78,8 +79,10 @@ public class ReaderServiceImpl implements ReaderService {
         readerRepository.save(reader);
         userRepository.save(user);
 
-        sender.publishUserCreated(user);
-        sender.publishReaderCreated(reader);
+        //sender.publishUserCreated(user);
+
+        ReaderDTO readerDTO = new ReaderDTO(reader.getName(), reader.getEmail(), reader.getBirthdate(), reader.getPhoneNumber(), reader.getReaderID());
+        sender.publishReaderCreated(readerDTO);
 
 //        readerServiceClient.saveReader(reader);
 //        readerServiceClient.saveUser(user);
@@ -99,7 +102,8 @@ public class ReaderServiceImpl implements ReaderService {
                 request.getPhoneNumber(), request.isGDPR(), request.getInterests());
 
         readerRepository.save(reader);
-        sender.publishReaderUpdated(reader);
+        ReaderDTO readerDTO = new ReaderDTO(reader.getName(), reader.getEmail(), reader.getBirthdate(), reader.getPhoneNumber(), reader.getReaderID());
+        sender.publishReaderUpdated(readerDTO);
 
         return reader;
     }

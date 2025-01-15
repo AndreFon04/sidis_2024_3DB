@@ -1,12 +1,10 @@
 package org.sidis.book.query.repositories;
 
 import org.sidis.book.query.model.Book;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface BookRepository {
 
     List<Book> findByGenre(String genre);
@@ -23,5 +21,6 @@ public interface BookRepository {
 
     List<Book> findByAuthorId(String authorID);
 
-    Book save(Book book);
+    <S extends Book> S save(S entity);
+
 }

@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.sidis.book.query.exceptions.NotFoundException;
 import org.sidis.book.query.model.Author;
-import org.sidis.book.query.model.CoAuthorDTO;
 import org.sidis.book.query.model.TopAuthorLendingDTO;
 import org.sidis.book.query.service.AuthorServiceImpl;
 import org.slf4j.Logger;
@@ -55,16 +54,6 @@ public class AuthorController {
         authorView.setImageUrl(authorService.getAuthorImageUrl(authorID));
         System.out.println("Author ID: " + authorID + " Image URL: " + authorView.getImageUrl());
         return ResponseEntity.ok(authorView);
-    }
-
-    //SprintB
-    @Operation(summary = "Get co-authors")
-    @GetMapping("/coauthors/{id1}/{id2}/")
-    public ResponseEntity<List<CoAuthorDTO>> getCoAuthorsAndBooks(@PathVariable String id1, @PathVariable String id2) {
-        String authorId = id1 + "/" + id2;
-
-        List<CoAuthorDTO> coAuthors = authorService.getCoAuthorsAndBooks(authorId);
-        return ResponseEntity.ok(coAuthors);
     }
 
     @GetMapping("/top5Authors")

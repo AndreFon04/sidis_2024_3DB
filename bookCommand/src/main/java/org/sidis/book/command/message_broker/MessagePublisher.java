@@ -2,6 +2,7 @@ package org.sidis.book.command.message_broker;
 
 import org.sidis.book.command.api.AuthorView;
 import org.sidis.book.command.model.Author;
+import org.sidis.book.command.model.AuthorDTO;
 import org.sidis.book.command.model.Book;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,13 +26,13 @@ public class MessagePublisher {
     private FanoutExchange fanoutBook;
 
 
-    public void publishAuthorCreated(Author author) {
-        template.convertAndSend(fanoutAuthor.getName(), "author.created", author);
+    public void publishAuthorCreated(AuthorDTO authorDTO) {
+        template.convertAndSend(fanoutAuthor.getName(), "author.created", authorDTO);
         logger.info("Sent author.created --> ");
     }
 
-    public void publishAuthorUpdated(Author author) {
-        template.convertAndSend(fanoutAuthor.getName(), "author.updated", author);
+    public void publishAuthorUpdated(AuthorDTO authorDTO) {
+        template.convertAndSend(fanoutAuthor.getName(), "author.updated", authorDTO);
         logger.info("Sent author.updated --> ");
     }
 

@@ -63,17 +63,17 @@ public class LendingServiceImpl implements LendingService {
 
     @Override
     public Lending create(CreateLendingRequest request) {
-        String isbn = messagePublisher.askBookISBNbyID(request.getBookID());
-
-        if (isbn == null) {
-            throw new NotFoundException("Book not found");
-        }
-
-        boolean validReaderID = messagePublisher.askReaderValidbyReaderID(request.getReaderID());
-
-        if (!validReaderID) {
-            throw new NotFoundException("Reader ID not found");
-        }
+//        String isbn = messagePublisher.askBookISBNbyID(request.getBookID());
+//
+//        if (isbn == null) {
+//            throw new NotFoundException("Book not found");
+//        }
+//
+//        boolean validReaderID = messagePublisher.askReaderValidbyReaderID(request.getReaderID());
+//
+//        if (!validReaderID) {
+//            throw new NotFoundException("Reader ID not found");
+//        }
 
         boolean hasOverdueLending = lendingRepository.existsByReaderIDAndOverdueTrue(request.getReaderID());
         if (hasOverdueLending) {

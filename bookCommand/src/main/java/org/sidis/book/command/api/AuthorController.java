@@ -5,15 +5,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org.sidis.book.command.api.AuthorView;
-import org.sidis.book.command.api.AuthorViewMapper;
-import org.sidis.book.command.api.BookViewMapper;
-import org.sidis.book.command.exceptions.NotFoundException;
 import org.sidis.book.command.model.Author;
-import org.sidis.book.command.model.CoAuthorDTO;
-import org.sidis.book.command.model.TopAuthorLendingDTO;
 import org.sidis.book.command.service.AuthorServiceImpl;
-import org.sidis.book.command.service.BookServiceImpl;
 import org.sidis.book.command.service.CreateAuthorRequest;
 import org.sidis.book.command.service.EditAuthorRequest;
 import org.slf4j.Logger;
@@ -24,9 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
-import java.util.UUID;
 
 
 @Tag(name = "Authors", description = "Endpoints for managing Authors")

@@ -27,23 +27,23 @@ public class MessagePublisher {
         logger.info("Sent lending.created --> ");
     }
 
-    public void publishAuthorUpdated(Lending lending) {
+    public void publishLendingUpdated(Lending lending) {
         template.convertAndSend(fanoutLending.getName(), "lending.updated", lending);
         logger.info("Sent lending.updated --> ");
     }
 
-    public String askBookISBNbyID(Long bookID){
-        logger.info("Sending book query: " + bookID + " --> ");
-
-        String isbn = (String) template.convertSendAndReceive("book.query.queue", bookID);
-        if (isbn == null) {throw new NotFoundException("Book not found");}
-
-        logger.info("<-- Received book ISBN: " + isbn);
-        return isbn;
-    }
-
-    public boolean askReaderValidbyReaderID(String readerID){
-        return true;
-    }
+//    public String askBookISBNbyID(Long bookID){
+//        logger.info("Sending book query: " + bookID + " --> ");
+//
+//        String isbn = (String) template.convertSendAndReceive("book.query.queue", bookID);
+//        if (isbn == null) {throw new NotFoundException("Book not found");}
+//
+//        logger.info("<-- Received book ISBN: " + isbn);
+//        return isbn;
+//    }
+//
+//    public boolean askReaderValidbyReaderID(String readerID){
+//        return true;
+//    }
 
 }

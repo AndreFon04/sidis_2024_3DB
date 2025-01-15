@@ -2,6 +2,7 @@ package org.sidis.book.query.message_broker;
 
 import lombok.RequiredArgsConstructor;
 import org.sidis.book.query.model.Author;
+import org.sidis.book.query.model.AuthorDTO;
 import org.sidis.book.query.model.Book;
 import org.sidis.book.query.repositories.AuthorRepository;
 import org.sidis.book.query.repositories.BookRepository;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+import static java.lang.System.exit;
+
 @Service
 @RequiredArgsConstructor
 public class MessageConsumer {
@@ -23,15 +26,15 @@ public class MessageConsumer {
     private final BookRepository bookRepository;
 
     @RabbitListener(queues = "#{authorQueue.name}")
-    public void notify(Author author, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String event) {
+    public void notify(AuthorDTO authorDTO, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String event) {
         logger.info("<-- Received {}", event);
 
         switch (event) {
             case "author.created", "author.updated":
-                logger.info("Received author with id: {}", author.getAuthorID());
-                if(repository.findByAuthorID(author.getAuthorID()).isEmpty()) {
-                    // restart static internal ID
-                    author.initCounter(author.getAuthorID());
+                logger.info("Received author with id: {}", authorDTO.getAuthorID());
+                if(repository.findByAuthorID(authorDTO.getAuthorID()).isEmpty()) {
+                    Author author = new Author(authorDTO.getName(), authorDTO.getBiography());
+                    author.setAuthorID(authorDTO.getAuthorID());
                     repository.save(author);
                 }
                 break;
@@ -49,13 +52,20 @@ public class MessageConsumer {
             case "book.created", "book.updated":
                 logger.info("Received book with id: {}", book.getBookID());
                 if(bookRepository.findBookByBookID(book.getBookID()).isEmpty()) {
-                    bookRepository.save(book);
+                    Book b = new Book(book.getIsbn(), book.getTitle(), book.getGenre(),
+                            book.getDescription(), book.getAuthor(), book.getBookImage());
+                    b.setBookID(book.getBookID());
+                    b.setVersion(book.getVersion());
+                    logger.info("Calling bookRepository.save() with bookid: {}", book.getBookID());
+                    bookRepository.save(b);
+                    logger.info("Returned from bookRepository.save()");
                 }
                 break;
 
             default:
                 logger.warn("/!\\ Unhandled event type: {}", event);
         }
+        exit(1);
     }
 
     @RabbitListener(queues = "book.query.queue")

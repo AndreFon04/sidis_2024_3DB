@@ -1,0 +1,49 @@
+@startuml
+
+actor "Librarian" as L
+participant "Book Command[w]" as BMW
+participant "Book Command[i]" as BMI
+participant "Book Query[i]" as BQ
+participant "Lending Command[i]" as LC
+participant "Lending Query[i]" as LQ
+
+participant "Message Broker" as MB
+
+
+L -> BMW : POST /book (isbn, title, genre,\n\t\t description,author/s)
+activate BMW
+
+BMW -> BMW : save (isbn, title, genre,\n\t description, author/s)
+
+BMW -> MB : publishBookCreated(book)
+activate MB
+
+BMW --> L: 201
+deactivate BMW
+
+MB -> BMI : notifyBookCreated(book)
+activate BMI
+BMI -> BMI : save (book)
+deactivate BMI
+
+MB -> BQ : notifyBookCreated(book)
+activate BQ
+BQ -> BQ : save (book)
+deactivate BQ
+
+MB -> LC : notifyBookCreated(book)
+activate LC
+LC -> LC : save (book)
+deactivate LC
+
+MB -> LQ : notifyBookCreated(book)
+activate LQ
+LQ -> LQ : save (book)
+deactivate LQ
+
+deactivate MB
+
+' Adiciona uma nota visível abaixo do diagrama
+footer Todas as User Stories que seguem o padrão POST terão um diagrama deste género.
+
+@enduml

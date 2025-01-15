@@ -1,0 +1,35 @@
+@startuml
+
+actor "Reader" as reader
+participant "Lending Command[w]" as LMW
+participant "Lending Command[i]" as LMI
+participant "Lending Query[i]" as LQ
+
+participant "Message Broker" as MB
+
+
+reader -> LMW : POST /lendings (isbn, readerID)
+activate LMW
+
+LMW -> LMW : save(isbn, readerID, startDate,\n\treturnDate, expectedReturnDate, \n\toverdue, fine)
+
+
+LMW -> MB : publishLendingCreated(lending)
+activate MB
+
+LMW --> reader : 201
+deactivate LMW
+
+MB -> LMI : notify(lending)
+activate LMI
+LMI -> LMI : save(lending)
+deactivate LMI
+
+MB -> LQ : notify(lending)
+activate LQ
+LQ -> LQ : save(lending)
+deactivate LQ
+
+deactivate MB
+
+@enduml

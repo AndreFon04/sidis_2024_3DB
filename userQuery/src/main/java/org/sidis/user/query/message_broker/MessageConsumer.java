@@ -2,6 +2,7 @@ package org.sidis.user.query.message_broker;
 
 import lombok.RequiredArgsConstructor;
 import org.sidis.user.query.model.Reader;
+import org.sidis.user.query.model.ReaderDTO;
 import org.sidis.user.query.model.User;
 import org.sidis.user.query.repositories.ReaderRepository;
 import org.sidis.user.query.repositories.UserRepository;
@@ -37,15 +38,18 @@ public class MessageConsumer {
     }
 
     @RabbitListener(queues = "#{readerQueue.name}")
-    public void notifyB(Reader reader, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String event) {
+    public void notifyB(ReaderDTO readerDTO, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String event) {
         logger.info("<-- Received {}", event);
 
         switch (event) {
             case "reader.created", "reader.updated":
-                logger.info("Received reader with id: {}", reader.getReaderID());
-                if(readerRepository.findByReaderID(reader.getReaderID()).isEmpty()) {
-                    reader.initCounter(reader.getReaderID());
+                logger.info("Received reader with id: {}", readerDTO.getReaderID());
+                if(readerRepository.findByReaderID(readerDTO.getReaderID()).isEmpty()) {
+                    Reader reader = new Reader(readerDTO.getName(), "x", readerDTO.getEmail(),
+                            readerDTO.getBirthdate(), readerDTO.getPhoneNumber(), true);
+                    logger.info("About to save reader");
                     readerRepository.save(reader);
+                    logger.info("Reader  saved with ID: {}", readerDTO.getReaderID());
                 }
                 break;
 

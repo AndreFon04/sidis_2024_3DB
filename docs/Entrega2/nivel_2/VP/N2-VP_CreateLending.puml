@@ -1,44 +1,35 @@
 @startuml
 
-actor "Reader" as R
-participant "LendingCommand[1]" as LM1
+actor "Reader" as reader
+participant "Lending Command[w]" as LMW
+participant "Lending Command[i]" as LMI
+participant "Lending Query[j]" as LQ
+
 participant "Message Broker" as MB
-participant "LendingCommand[2]" as LM2
-participant "BookService" as BM
-participant "UserService" as UM
-
-activate R
-R -> LM1 : POST /lendings (isbn, email)
-activate LM1
 
 
-LM1 -> BM :  getBookById(isbn)
-activate BM
+reader -> LMW : POST /lendings (isbn, readerID)
+activate LMW
+
+LMW -> LMW : save(isbn, readerID, startDate,\n\treturnDate, expectedReturnDate, \n\toverdue, fine)
 
 
-BM --> LM1 : book
-deactivate BM
-
-LM1 -> UM :  getUserByEmail(email)
-activate UM
-
-
-UM --> LM1 : reader
-deactivate UM
-
-LM1 -> LM1 : save (isbn, email)
-
-LM1 -> MB : sendLendingCreatedNotification()
+LMW -> MB : publishLendingCreated(lending)
 activate MB
 
-LM1 --> R : Success
-deactivate LM1
-deactivate R
-MB -> LM2 : notifyLendingCreated()
-activate LM2
+LMW --> reader : 201
+MB -> LMW : notify(lending)
+deactivate LMW
 
-LM2 --> MB : Acknowledge
-deactivate LM2
+MB -> LMI : notify(lending)
+activate LMI
+LMI -> LMI : save(lending)
+deactivate LMI
+
+MB -> LQ : notify(lending)
+activate LQ
+LQ -> LQ : save(lending)
+deactivate LQ
 
 deactivate MB
 

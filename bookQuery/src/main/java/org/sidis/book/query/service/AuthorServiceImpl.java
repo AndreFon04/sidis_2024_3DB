@@ -1,16 +1,13 @@
 package org.sidis.book.query.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.sidis.book.query.client.LendingDTO;
 import org.sidis.book.query.client.LendingServiceClient;
 import org.sidis.book.query.exceptions.NotFoundException;
 import org.sidis.book.query.model.Author;
 import org.sidis.book.query.model.Book;
-import org.sidis.book.query.model.CoAuthorDTO;
 import org.sidis.book.query.model.TopAuthorLendingDTO;
 import org.sidis.book.query.repositories.AuthorRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.*;
@@ -40,40 +37,6 @@ public class AuthorServiceImpl implements AuthorService {
         return authorRepository.findByAuthorID(authorID);
     }
 
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<CoAuthorDTO> getCoAuthorsAndBooks(String authorId) {
-        Optional<Author> authorOpt = authorRepository.findByAuthorID(authorId);
-        if (authorOpt.isEmpty()) {
-            throw new EntityNotFoundException("Author not found");
-        }
-
-        Author author = authorOpt.get();
-        System.out.println("Author found: " + author.getName());
-
-        List<Book> books = authorRepository.findByAuthorsContaining(author);
-        System.out.println("Books found: " + books.size());
-
-        Map<Author, List<Book>> coAuthorBooksMap = new HashMap<>();
-
-        for (Book book : books) {
-            System.out.println("Processing book: " + book.getTitle());
-            for (Author coAuthor : book.getAuthor()) {
-                System.out.println("Checking co-author: " + coAuthor.getName());
-                if (!coAuthor.equals(author)) {
-                    System.out.println("Co-author found: " + coAuthor.getName());
-                    coAuthorBooksMap.computeIfAbsent(coAuthor, k -> new ArrayList<>()).add(book);
-                }
-            }
-        }
-
-        System.out.println("Co-authors and books map size: " + coAuthorBooksMap.size());
-
-        return coAuthorBooksMap.entrySet().stream()
-                .map(entry -> new CoAuthorDTO(entry.getKey(), entry.getValue()))
-                .collect(Collectors.toList());
-    }
 
 
 

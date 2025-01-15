@@ -1,7 +1,9 @@
 package org.sidis.book.command.message_broker;
 
 import org.sidis.book.command.model.Author;
+import org.sidis.book.command.model.AuthorDTO;
 import org.sidis.book.command.model.Book;
+import org.sidis.book.command.model.BookDTO;
 import org.sidis.book.command.repositories.AuthorRepository;
 import org.sidis.book.command.repositories.BookRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,15 +24,15 @@ public class MessageConsumer {
     private final BookRepository bookRepository;
 
     @RabbitListener(queues = "#{authorQueue.name}")
-    public void notify(Author author, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String event) {
+    public void notify(AuthorDTO authorDTO, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String event) {
         logger.info("<-- Received {}", event);
 
         switch (event) {
             case "author.created", "author.updated":
-                logger.info("Received author with id: {}", author.getAuthorID());
-                if(repository.findByAuthorID(author.getAuthorID()).isEmpty()) {
-                    // restart static internal ID
-                    author.initCounter(author.getAuthorID());
+                logger.info("Received author with id: {}", authorDTO.getAuthorID());
+                if(repository.findByAuthorID(authorDTO.getAuthorID()).isEmpty()) {
+                    Author author = new Author(authorDTO.getName(), authorDTO.getBiography());
+                    author.setAuthorID(authorDTO.getAuthorID());
                     repository.save(author);
                 }
                 break;
@@ -41,14 +43,15 @@ public class MessageConsumer {
     }
 
     @RabbitListener(queues = "#{bookQueue.name}")
-    public void notifyB(Book book, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String event) {
+    public void notifyB(BookDTO bookDTO, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String event) {
         logger.info("<-- Received {}", event);
 
         switch (event) {
             case "book.created", "book.updated":
-                logger.info("Received book with id: {}", book.getBookID());
-                if(bookRepository.findBookByBookID(book.getBookID()).isEmpty()) {
-//                    author.initCounter(author.getAuthorID());
+                logger.info("Received book with id: {}", bookDTO.getBookId());
+                if(bookRepository.findBookByBookID(bookDTO.getBookId()).isEmpty()) {
+                    Book book = new Book(bookDTO.getIsbn(), bookDTO.getTitle(), bookDTO.getGenre(), bookDTO.getDescription(), bookDTO.getAuthor(), bookDTO.getBookImage());
+                    book.setBookID(bookDTO.getBookId());
                     bookRepository.save(book);
                 }
                 break;

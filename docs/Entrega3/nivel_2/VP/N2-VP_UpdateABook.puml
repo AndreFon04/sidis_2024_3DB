@@ -1,0 +1,47 @@
+@startuml
+
+actor "Librarian" as U
+participant "BookCommand[w]" as BMW
+participant "BookCommand[i]" as BMI
+participant "Book Query[i]" as BQ
+participant "Lending Command[i]" as LC
+participant "Lending Query[i]" as LQ
+
+participant "Message Broker" as MB
+
+U -> BMW : PATCH /book (isbn, title, genre,\n\t\t description, author/s)
+activate BMW
+
+BMW -> BMW : update (isbn, title, genre,\n\t description, author/s)
+
+BMW -> MB : publishBookUpdated(book)
+activate MB
+
+BMW --> U: 200
+deactivate BMW
+
+MB -> BMI : notifyB(book)
+activate BMI
+BMI --> BMI : save (book)
+deactivate BMI
+
+MB -> BQ : notifyB(book)
+activate BQ
+BQ --> BQ : save (book)
+deactivate BQ
+
+MB -> LC : notifyB(book)
+activate LC
+LC --> LC : save (book)
+deactivate LC
+
+MB -> LQ : notifyB(book)
+activate LQ
+LQ --> LQ : save (book)
+deactivate LQ
+
+deactivate MB
+
+footer Todas as User Stories que seguem o padrão PATCH terão um diagrama deste género.
+
+@enduml

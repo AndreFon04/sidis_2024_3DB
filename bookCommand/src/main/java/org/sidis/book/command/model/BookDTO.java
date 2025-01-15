@@ -1,32 +1,42 @@
 package org.sidis.book.command.model;
 
-import org.sidis.book.command.model.Book;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
 public class BookDTO {
 
+    @Setter
     private Long bookId;
     private String title;
+    @Setter
+    private String isbn;
+    @Setter
+    private String description;
+    @Setter
+    private Genre genre;
+    @Setter
+    private List<Author> author = new ArrayList<>();
+    @Setter
+    private BookImage bookImage;
 
-    public BookDTO(Book book) {
-        this.bookId = book.getBookID();
-        this.title = book.getTitle();
-    }
 
-    // Getters and setters
+    public BookDTO() {}
 
-    public Long getBookId() {
-        return bookId;
-    }
-
-    public void setBookId(Long bookId) {
+    public BookDTO(final String isbn, final String title, final String description, final Long bookId) {
         this.bookId = bookId;
+        this.title = title;
+        this.isbn = isbn;
+        this.description = description;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
+    public void setTitle(final String title) {
+        if (title == null || title.isBlank()) {
+            throw new IllegalArgumentException("Title must not be null, nor blank");
+        }
         this.title = title;
     }
 }

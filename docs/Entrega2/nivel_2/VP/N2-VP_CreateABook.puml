@@ -1,28 +1,45 @@
 @startuml
 
+actor "Librarian" as L
+participant "Book Command[w]" as BMW
+participant "Book Command[i]" as BMI
+participant "Book Query[j]" as BQ
+participant "Lending Command[k]" as LC
+participant "Lending Query[l]" as LQ
 
-actor "Librarian" as U
-participant "BookCommand[1]" as BM1
 participant "Message Broker" as MB
-participant "BookCommand[2]" as BM2
 
-activate U
-U -> BM1 : POST /book (isbn, title, genre, description)
-activate BM1
 
-BM1 -> BM1 : save (isbn, title, genre, description)
+L -> BMW : POST /book (isbn, title, genre,\n\t\t description,author/s)
+activate BMW
 
-BM1 -> MB : sendBookCreatedNotification()
+BMW -> BMW : save (isbn, title, genre,\n\t description, author/s)
+
+BMW -> MB : publishBookCreated(book)
 activate MB
 
-BM1 --> U: Success
-deactivate U
-deactivate BM1
+BMW --> L: 201
+deactivate BMW
 
-MB -> BM2 : notifyBookCreated()
-activate BM2
-BM2 --> MB : Acknowledge
-deactivate BM2
+MB -> BMI : notifyBookCreated(book)
+activate BMI
+BMI -> BMI : save (book)
+deactivate BMI
+
+MB -> BQ : notifyBookCreated(book)
+activate BQ
+BQ -> BQ : save (book)
+deactivate BQ
+
+MB -> LC : notifyBookCreated(book)
+activate LC
+LC -> LC : save (book)
+deactivate LC
+
+MB -> LQ : notifyBookCreated(book)
+activate LQ
+LQ -> LQ : save (book)
+deactivate LQ
 
 deactivate MB
 
