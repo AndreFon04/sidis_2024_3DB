@@ -17,15 +17,14 @@
     <packaging>pom</packaging> <!-- Set packaging to 'pom' -->
 
     <modules>
-        <module>book-service</module>
-        <module>lending-service</module>
-        <module>user-service</module>
+        <module>acquisitionsCommand</module>
         <module>bookCommand</module>
         <module>bookQuery</module>
         <module>userCommand</module>
         <module>userQuery</module>
         <module>lendingCommand</module>
         <module>lendingQuery</module>
+        <module>suggestionCommand</module>
     </modules>
 
     <properties>
