@@ -25,17 +25,19 @@ public class Config {
     }
 
     @Bean
+    public FanoutExchange fanoutSuggestion() {
+        return new FanoutExchange("suggestion.fanout");
+    }
+
+
+    @Bean
     public Queue authorQueue(){return new AnonymousQueue();}
 
     @Bean
     public Queue bookQueue(){return new AnonymousQueue();}
 
     @Bean
-    public Queue bookQueryQueue(){return new Queue("book.query.queue", true);}
-
-
-    @Bean
-    public DirectExchange exchangeBook() {return new DirectExchange("lending.exchange");}
+    public Queue suggestionQueue(){return new AnonymousQueue();}
 
 
     @Bean
@@ -45,7 +47,7 @@ public class Config {
     public Binding bookBinding() {return BindingBuilder.bind(bookQueue()).to(fanoutBook());}
 
     @Bean
-    public Binding bookQueryBinding() {return BindingBuilder.bind(bookQueryQueue()).to(exchangeBook()).with("book.query.routingkey");}
+    public Binding suggestionBinding() {return BindingBuilder.bind(suggestionQueue()).to(fanoutSuggestion());}
 
     @Bean
     public MessageConverter converter(){

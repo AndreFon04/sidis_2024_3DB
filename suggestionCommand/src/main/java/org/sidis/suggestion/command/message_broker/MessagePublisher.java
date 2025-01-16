@@ -1,5 +1,6 @@
 package org.sidis.suggestion.command.message_broker;
 
+import org.sidis.suggestion.command.dto.SuggestionDTO;
 import org.sidis.suggestion.command.model.Suggestion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,12 +23,18 @@ public class MessagePublisher {
 
 
     public void publishSuggestionCreated(Suggestion suggestion) {
-        template.convertAndSend(fanoutSuggestion.getName(), "suggestion.created", suggestion);
+        SuggestionDTO suggestionDTO = new SuggestionDTO(suggestion.getSuggestionID(), suggestion.getBookISBN(),
+                suggestion.getBookTitle(), suggestion.getBookAuthorName(),
+                suggestion.getReaderID(), suggestion.getNotes(), suggestion.getState());
+        template.convertAndSend(fanoutSuggestion.getName(), "suggestion.created", suggestionDTO);
         logger.info("Sent suggestion.created --> ");
     }
 
     public void publishSuggestionUpdated(Suggestion suggestion) {
-        template.convertAndSend(fanoutSuggestion.getName(), "suggestion.updated", suggestion);
+        SuggestionDTO suggestionDTO = new SuggestionDTO(suggestion.getSuggestionID(), suggestion.getBookISBN(),
+                suggestion.getBookTitle(), suggestion.getBookAuthorName(),
+                suggestion.getReaderID(), suggestion.getNotes(), suggestion.getState());
+        template.convertAndSend(fanoutSuggestion.getName(), "suggestion.updated", suggestionDTO);
         logger.info("Sent suggestion.updated --> ");
     }
 }

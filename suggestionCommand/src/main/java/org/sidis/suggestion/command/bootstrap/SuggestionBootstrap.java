@@ -35,7 +35,8 @@ public class SuggestionBootstrap implements CommandLineRunner {
 
         if (repository.findByIsbn("123456789").isEmpty()) {
             System.out.println("sgBt.s1");
-            final Suggestion s1 = new Suggestion("123456789", "QLQR COISA", "QLQR ALGUEM", "2025/1");
+            final Suggestion s1 = new Suggestion("123456789", "QLQR COISA", "QLQR ALGUEM", "2025/1", 1);
+            s1.setUniqueSuggestionID();
             repository.save(s1);
             System.out.println("sgBt.s1.save");
         }
@@ -44,12 +45,13 @@ public class SuggestionBootstrap implements CommandLineRunner {
     }
 
     private void addSuggestionIndividually() {
-        addSuggestion("123456788", "Segunda qlqr coisa", "Segunda qlqr alguem", "2023/2");
+        addSuggestion("123456788", "Segunda qlqr coisa", "Segunda qlqr alguem", "2023/2", 1);
     }
 
-    private void addSuggestion(final String bookISBN, final String bookTitle, final String bookAuthorName, final String readerID) {
+    private void addSuggestion(final String bookISBN, final String bookTitle, final String bookAuthorName, final String readerID, final int state) {
         if (repository.findByIsbn(bookISBN).isEmpty()) {
-            Suggestion suggestion = new Suggestion(bookISBN, bookTitle, bookAuthorName, readerID);
+            Suggestion suggestion = new Suggestion(bookISBN, bookTitle, bookAuthorName, readerID, state);
+            suggestion.setUniqueSuggestionID();
             repository.save(suggestion);
         }
     }

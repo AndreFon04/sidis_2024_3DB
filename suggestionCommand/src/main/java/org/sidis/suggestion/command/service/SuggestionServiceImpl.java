@@ -33,12 +33,6 @@ public class SuggestionServiceImpl implements SuggestionService {
     }
 
     @Override
-    public List<Suggestion> findAll() {
-        return repository.findAll();
-    }
-
-
-    @Override
     public Suggestion create(CreateSuggestionRequest request) {
 
         if (bookRepository.findByIsbn(request.getIsbn()).isPresent()) {
@@ -49,7 +43,7 @@ public class SuggestionServiceImpl implements SuggestionService {
             throw new NotFoundException("Reader with ID " + request.getReaderID() + " not found");
         }
 
-        Suggestion suggestion = new Suggestion(request.getIsbn(), request.getTitle(), request.getAuthorName(), request.getReaderID());
+        Suggestion suggestion = new Suggestion(request.getIsbn(), request.getTitle(), request.getAuthorName(), request.getReaderID(), 0);
         suggestion.setUniqueSuggestionID();
 
         System.out.println("About to add suggestion " + suggestion.getSuggestionID() + " " + suggestion.getBookTitle());

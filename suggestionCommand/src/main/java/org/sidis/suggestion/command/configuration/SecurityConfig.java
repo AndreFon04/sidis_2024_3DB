@@ -97,6 +97,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PATCH, "/api/authors/**").permitAll() // read-only authors
                 .requestMatchers(HttpMethod.PATCH, "/api/books/**").permitAll() // read-only books
                 .requestMatchers(HttpMethod.PATCH, "/api/lendings/**").permitAll() // read-only lendings
+                .requestMatchers(HttpMethod.PATCH, "/api/suggestions/**").permitAll() // read-only lendings
 
 
                 // Our private endpoints

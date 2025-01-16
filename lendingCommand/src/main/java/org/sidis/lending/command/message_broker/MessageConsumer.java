@@ -32,7 +32,7 @@ public class MessageConsumer {
     private final AuthorRepository authorRepository;
     private final ReaderRepository readerRepository;
 
-    @RabbitListener(queues = "lending.queue")
+    @RabbitListener(queues = "#{lendingQueue.name}")
     public void notify(Lending lending, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String event) {
         logger.info("<-- Received {}", event);
 
@@ -56,7 +56,7 @@ public class MessageConsumer {
         }
     }
 
-    @RabbitListener(queues = "book.queue")
+    @RabbitListener(queues = "#{bookQueue.name}")
     public void notifyBook(BookDTO bookDTO, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String event) {
         logger.info("<-- Received {}", event);
 
@@ -77,7 +77,7 @@ public class MessageConsumer {
         }
     }
 
-    @RabbitListener(queues = "author.queue")
+    @RabbitListener(queues = "#{authorQueue.name}")
     public void notifyAuthor(AuthorDTO authorDTO, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String event) {
         logger.info("<-- Received {}", event);
 
@@ -98,7 +98,7 @@ public class MessageConsumer {
         }
     }
 
-    @RabbitListener(queues = "reader.queue")
+    @RabbitListener(queues = "#{readerQueue.name}")
     public void notifyReader(ReaderDTO readerDTO, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String event) {
         logger.info("<-- Received {}", event);
 

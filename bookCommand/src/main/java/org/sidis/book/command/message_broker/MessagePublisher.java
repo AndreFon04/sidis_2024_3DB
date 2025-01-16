@@ -4,12 +4,16 @@ import org.sidis.book.command.api.AuthorView;
 import org.sidis.book.command.model.Author;
 import org.sidis.book.command.model.AuthorDTO;
 import org.sidis.book.command.model.Book;
+import org.sidis.book.command.model.BookDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class MessagePublisher {
@@ -26,12 +30,14 @@ public class MessagePublisher {
     private FanoutExchange fanoutBook;
 
 
-    public void publishAuthorCreated(AuthorDTO authorDTO) {
+    public void publishAuthorCreated(Author author) {
+        AuthorDTO authorDTO = new AuthorDTO(author.getName(), author.getBiography(), author.getAuthorID());
         template.convertAndSend(fanoutAuthor.getName(), "author.created", authorDTO);
         logger.info("Sent author.created --> ");
     }
 
-    public void publishAuthorUpdated(AuthorDTO authorDTO) {
+    public void publishAuthorUpdated(Author author) {
+        AuthorDTO authorDTO = new AuthorDTO(author.getName(), author.getBiography(), author.getAuthorID());
         template.convertAndSend(fanoutAuthor.getName(), "author.updated", authorDTO);
         logger.info("Sent author.updated --> ");
     }
@@ -40,12 +46,24 @@ public class MessagePublisher {
     public void publishBookCreated(Book book) {
         System.out.println(book.getTitle() + "|" + book.getGenre() + "|" + book.getDescription() + "|" + book.getIsbn() +
                 "|" + book.getBookImage() + "|" + book.getAuthor());
-        template.convertAndSend(fanoutBook.getName(), "book.created", book);
-        logger.info("Sent book.created --> ");
+        List<String> authors = new ArrayList<>();
+        for (Author author : book.getAuthor()) {
+            authors.add(author.getAuthorID());
+        }
+        BookDTO bookDTO = new BookDTO(book.getBookID(), book.getTitle(), book.getIsbn(), book.getDescription(),
+                book.getGenre().getInterest(), authors);
+        template.convertAndSend(fanoutBook.getName(), "book.created", bookDTO);
+        logger.info("Sent book.created --> " + fanoutBook.getName() + " / " + "book.created");
     }
 
     public void publishBookUpdated(Book book) {
-        template.convertAndSend(fanoutBook.getName(), "book.updated", book);
+        List<String> authors = new ArrayList<>();
+        for (Author author : book.getAuthor()) {
+            authors.add(author.getAuthorID());
+        }
+        BookDTO bookDTO = new BookDTO(book.getBookID(), book.getTitle(), book.getIsbn(), book.getDescription(),
+                book.getGenre().getInterest(), authors);
+        template.convertAndSend(fanoutBook.getName(), "book.updated", bookDTO);
         logger.info("Sent book.updated --> ");
     }
 }

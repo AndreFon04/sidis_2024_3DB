@@ -17,7 +17,6 @@
     <packaging>pom</packaging> <!-- Set packaging to 'pom' -->
 
     <modules>
-        <module>acquisitionsCommand</module>
         <module>bookCommand</module>
         <module>bookQuery</module>
         <module>userCommand</module>
@@ -25,6 +24,7 @@
         <module>lendingCommand</module>
         <module>lendingQuery</module>
         <module>suggestionCommand</module>
+        <module>suggestionQuery</module>
     </modules>
 
     <properties>

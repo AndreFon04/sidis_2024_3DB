@@ -3,16 +3,12 @@ package org.sidis.book.query.model;
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter
+@Setter
 public class AuthorDTO {
 
-    @Getter
-    @Setter
     private String name;
-    @Getter
-    @Setter
     private String biography;
-    @Getter
-    @Setter
     private String authorID;
 
     public AuthorDTO() {}

@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>userQuery</artifactId>
-    <description>API to handle book querying</description>
+    <description>API to handle user querying</description>
 
     <properties>
         <java.version>17</java.version>

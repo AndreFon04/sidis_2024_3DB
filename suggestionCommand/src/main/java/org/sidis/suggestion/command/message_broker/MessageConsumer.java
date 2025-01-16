@@ -4,20 +4,18 @@ import lombok.RequiredArgsConstructor;
 import org.sidis.suggestion.command.dto.AuthorDTO;
 import org.sidis.suggestion.command.dto.BookDTO;
 import org.sidis.suggestion.command.dto.ReaderDTO;
-import org.sidis.suggestion.command.model.AuthorS;
-import org.sidis.suggestion.command.model.BookS;
-import org.sidis.suggestion.command.model.Suggestion;
-import org.sidis.suggestion.command.model.ReaderS;
-import org.sidis.suggestion.command.repositories.AuthorRepository;
-import org.sidis.suggestion.command.repositories.BookRepository;
-import org.sidis.suggestion.command.repositories.SuggestionRepository;
-import org.sidis.suggestion.command.repositories.ReaderRepository;
+import org.sidis.suggestion.command.dto.SuggestionDTO;
+import org.sidis.suggestion.command.model.*;
+import org.sidis.suggestion.command.repositories.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Service
@@ -29,18 +27,23 @@ public class MessageConsumer {
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
     private final ReaderRepository readerRepository;
+    private final GenreRepository genreRepository;
 
-    @RabbitListener(queues = "suggestion.queue")
-    public void notify(Suggestion suggestion, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String event) {
+    @RabbitListener(queues = "#{suggestionQueue.name}")
+    public void notify(SuggestionDTO suggestionDTO, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String event) {
         logger.info("<-- Received {}", event);
 
         switch (event) {
             case "suggestion.created", "suggestion.updated":
-                logger.info("Received suggestion with id: {}", suggestion.getSuggestionID());
-                if(suggestionRepository.findBySuggestionID(suggestion.getSuggestionID()).isEmpty()) {
+                logger.info("Received suggestion with id: {}", suggestionDTO.getSuggestionID());
+                if(suggestionRepository.findBySuggestionID(suggestionDTO.getSuggestionID()).isEmpty()) {
                     // restart static internal ID
                     logger.info("About to save suggestion");
-                    suggestionRepository.save(suggestion);
+                    Suggestion s = new Suggestion(suggestionDTO.getBookISBN(), suggestionDTO.getBookTitle(),
+                            suggestionDTO.getBookAuthorName(), suggestionDTO.getReaderID(), suggestionDTO.getState());
+                    s.setSuggestionID(suggestionDTO.getSuggestionID());
+                    s.setNotes(suggestionDTO.getNotes());
+                    suggestionRepository.save(s);
                     logger.info("Saved suggestion");
                 }
                 break;
@@ -50,7 +53,7 @@ public class MessageConsumer {
         }
     }
 
-    @RabbitListener(queues = "book.queue")
+    @RabbitListener(queues = "#{bookQueue.name}")
     public void notifyBook(BookDTO bookDTO, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String event) {
         logger.info("<-- Received {}", event);
 
@@ -58,12 +61,24 @@ public class MessageConsumer {
             case "book.created", "book.updated":
                 logger.info("Received book with isbn: {}", bookDTO.getIsbn());
                 if(bookRepository.findByIsbn(bookDTO.getIsbn()).isEmpty()) {
-                    BookS b = new BookS(bookDTO.getIsbn(), bookDTO.getTitle(), bookDTO.getGenre(), bookDTO.getDescription(), bookDTO.getAuthor());
+                    List<AuthorS> authorList = new ArrayList<>();
+                    for (String authorID : bookDTO.getAuthors()) {
+                        AuthorS author = authorRepository.findByAuthorID(authorID).orElse(null);
+                        if (author != null) {
+                            authorList.add(author);
+                        }
+                    }
+                    //GenreS genre = new GenreS(bookDTO.getGenre());
+                    GenreS genre = genreRepository.findByInterest(bookDTO.getGenre());
+                    BookS b = new BookS(bookDTO.getIsbn(), bookDTO.getTitle(), genre, bookDTO.getDescription(), authorList);
                     b.setBookID(bookDTO.getBookId());
                     logger.info("About to save book");
-                    bookRepository.save(b);
+//                    bookRepository.save(b);
                     logger.info("Book saved with isbn: {}", b.getIsbn());
                 }
+                break;
+
+            case "book.suggestion.created", "book.suggestion.creation.failed", "book.exists", "book.suggestion.exists":
                 break;
 
             default:
@@ -71,7 +86,7 @@ public class MessageConsumer {
         }
     }
 
-    @RabbitListener(queues = "author.queue")
+    @RabbitListener(queues = "#{authorQueue.name}")
     public void notifyAuthor(AuthorDTO authorDTO, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String event) {
         logger.info("<-- Received {}", event);
 
@@ -92,7 +107,7 @@ public class MessageConsumer {
         }
     }
 
-    @RabbitListener(queues = "reader.queue")
+    @RabbitListener(queues = "#{readerQueue.name}")
     public void notifyReader(ReaderDTO readerDTO, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String event) {
         logger.info("<-- Received {}", event);
 

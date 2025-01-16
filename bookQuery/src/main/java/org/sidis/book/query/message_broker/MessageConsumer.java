@@ -1,19 +1,18 @@
 package org.sidis.book.query.message_broker;
 
 import lombok.RequiredArgsConstructor;
-import org.sidis.book.query.model.Author;
-import org.sidis.book.query.model.AuthorDTO;
-import org.sidis.book.query.model.Book;
+import org.sidis.book.query.model.*;
 import org.sidis.book.query.repositories.AuthorRepository;
 import org.sidis.book.query.repositories.BookRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static java.lang.System.exit;
@@ -45,19 +44,25 @@ public class MessageConsumer {
     }
 
     @RabbitListener(queues = "#{bookQueue.name}")
-    public void notifyB(Book book, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String event) {
+    public void notifyB(BookDTO bookDTO, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String event) {
         logger.info("<-- Received {}", event);
 
         switch (event) {
             case "book.created", "book.updated":
-                logger.info("Received book with id: {}", book.getBookID());
-                if(bookRepository.findBookByBookID(book.getBookID()).isEmpty()) {
-                    Book b = new Book(book.getIsbn(), book.getTitle(), book.getGenre(),
-                            book.getDescription(), book.getAuthor(), book.getBookImage());
-                    b.setBookID(book.getBookID());
-                    b.setVersion(book.getVersion());
+                logger.info("Received book with id: {}", bookDTO.getBookId());
+                if(bookRepository.findBookByBookID(bookDTO.getBookId()).isEmpty()) {
+                    List<Author> authorList = new ArrayList<>();
+                    for (String authorID : bookDTO.getAuthors()) {
+                        Author author = repository.findByAuthorID(authorID).orElse(null);
+                        if (author != null) {
+                            authorList.add(author);
+                        }
+                    }
+                    Genre genre = new Genre(bookDTO.getGenre());
+                    Book book = new Book(bookDTO.getIsbn(), bookDTO.getTitle(), genre, bookDTO.getDescription(), authorList, null);
+                    book.setBookID(bookDTO.getBookId());
                     logger.info("Calling bookRepository.save() with bookid: {}", book.getBookID());
-                    bookRepository.save(b);
+                    bookRepository.save(book);
                     logger.info("Returned from bookRepository.save()");
                 }
                 break;
@@ -66,20 +71,5 @@ public class MessageConsumer {
                 logger.warn("/!\\ Unhandled event type: {}", event);
         }
         exit(1);
-    }
-
-    @RabbitListener(queues = "book.query.queue")
-    public String handleLendingRequest(Long bookID, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String event) {
-        logger.info("<-- Received {}", event);
-        Optional<Book> b = bookRepository.findBookByBookID(bookID);
-        logger.info("Received book request with id: {}", bookID);
-
-        String isbn = null;
-        if (b.isPresent()) {
-            isbn = b.get().getIsbn();
-        }
-
-        logger.info("Sending response with isbn: {} --> ", isbn);
-        return isbn;
     }
 }

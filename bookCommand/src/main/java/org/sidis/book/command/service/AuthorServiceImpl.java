@@ -3,7 +3,6 @@ package org.sidis.book.command.service;
 import org.sidis.book.command.exceptions.NotFoundException;
 import org.sidis.book.command.message_broker.MessagePublisher;
 import org.sidis.book.command.model.Author;
-import org.sidis.book.command.model.AuthorDTO;
 import org.sidis.book.command.repositories.AuthorRepository;
 import org.springframework.stereotype.Service;
 
@@ -35,9 +34,7 @@ public class AuthorServiceImpl implements AuthorService {
 
         authorRepository.save(author);
 
-        AuthorDTO authorDTO = new AuthorDTO(author.getName(), author.getBiography(), author.getAuthorID());
-
-        sender.publishAuthorCreated(authorDTO);
+        sender.publishAuthorCreated(author);
 
         return author;
     }
@@ -52,9 +49,7 @@ public class AuthorServiceImpl implements AuthorService {
 
         authorRepository.save(author);
 
-        AuthorDTO authorDTO = new AuthorDTO(author.getName(), author.getBiography(), author.getAuthorID());
-
-        sender.publishAuthorUpdated(authorDTO);
+        sender.publishAuthorUpdated(author);
 
         return author;
     }

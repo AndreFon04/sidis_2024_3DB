@@ -18,7 +18,5 @@ public interface SuggestionRepository {
 
     List<Suggestion> findByReaderID(String readerID);
 
-    List<Suggestion> findAll();
-
     <S extends Suggestion> S save(S entity);
 }

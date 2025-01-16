@@ -25,16 +25,30 @@ public class Config {
     }
 
     @Bean
+    public FanoutExchange fanoutSuggestion() {
+        return new FanoutExchange("suggestion.fanout");
+    }
+
+
+
+    @Bean
     public Queue authorQueue(){return new AnonymousQueue();}
 
     @Bean
     public Queue bookQueue(){return new AnonymousQueue();}
 
     @Bean
+    public Queue suggestionQueue(){return new AnonymousQueue();}
+
+
+    @Bean
     public Binding authorBinding() {return BindingBuilder.bind(authorQueue()).to(fanoutAuthor());}
 
     @Bean
     public Binding bookBinding() {return BindingBuilder.bind(bookQueue()).to(fanoutBook());}
+
+    @Bean
+    public Binding suggestionBinding() {return BindingBuilder.bind(suggestionQueue()).to(fanoutSuggestion());}
 
     @Bean
     public MessageConverter converter(){

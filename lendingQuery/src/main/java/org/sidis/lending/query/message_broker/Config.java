@@ -20,7 +20,7 @@ public class Config {
     }
 
     @Bean
-    public Queue lendingQueue(){return new Queue("lending.queue", true);}
+    public Queue lendingQueue(){return new AnonymousQueue();}
 
 
     @Bean

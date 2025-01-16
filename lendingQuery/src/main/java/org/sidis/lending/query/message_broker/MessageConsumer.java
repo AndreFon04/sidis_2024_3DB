@@ -18,7 +18,7 @@ public class MessageConsumer {
     private static final Logger logger = LoggerFactory.getLogger(MessageConsumer.class);
     private final LendingRepository lendingRepository;
 
-    @RabbitListener(queues = "lending.queue")
+    @RabbitListener(queues = "#{lendingQueue.name}")
     public void notify(Lending lending, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String event) {
         logger.info("<-- Received {}", event);
 

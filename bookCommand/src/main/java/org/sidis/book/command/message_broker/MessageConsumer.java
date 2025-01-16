@@ -1,9 +1,6 @@
 package org.sidis.book.command.message_broker;
 
-import org.sidis.book.command.model.Author;
-import org.sidis.book.command.model.AuthorDTO;
-import org.sidis.book.command.model.Book;
-import org.sidis.book.command.model.BookDTO;
+import org.sidis.book.command.model.*;
 import org.sidis.book.command.repositories.AuthorRepository;
 import org.sidis.book.command.repositories.BookRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +10,9 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Service
@@ -50,7 +50,15 @@ public class MessageConsumer {
             case "book.created", "book.updated":
                 logger.info("Received book with id: {}", bookDTO.getBookId());
                 if(bookRepository.findBookByBookID(bookDTO.getBookId()).isEmpty()) {
-                    Book book = new Book(bookDTO.getIsbn(), bookDTO.getTitle(), bookDTO.getGenre(), bookDTO.getDescription(), bookDTO.getAuthor(), bookDTO.getBookImage());
+                    List<Author> authorList = new ArrayList<>();
+                    for (String authorID : bookDTO.getAuthors()) {
+                        Author author = repository.findByAuthorID(authorID).orElse(null);
+                        if (author != null) {
+                            authorList.add(author);
+                        }
+                    }
+                    Genre genre = new Genre(bookDTO.getGenre());
+                    Book book = new Book(bookDTO.getIsbn(), bookDTO.getTitle(), genre, bookDTO.getDescription(), authorList, null);
                     book.setBookID(bookDTO.getBookId());
                     bookRepository.save(book);
                 }

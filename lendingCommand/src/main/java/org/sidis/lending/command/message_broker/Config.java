@@ -20,11 +20,6 @@ public class Config {
     }
 
     @Bean
-    public FanoutExchange fanoutBookQuery() {
-        return new FanoutExchange("bookQuery.fanout");
-    }
-
-    @Bean
     public FanoutExchange fanoutBook() {
         return new FanoutExchange("book.fanout");
     }
@@ -42,24 +37,16 @@ public class Config {
 
 
     @Bean
-    public Queue lendingQueue(){return new Queue("lending.queue", true);}
+    public Queue lendingQueue(){return new AnonymousQueue();}
 
     @Bean
-    public Queue bookQueryQueue(){return new Queue("book.query.queue", true);}
+    public Queue bookQueue(){return new AnonymousQueue();}
 
     @Bean
-    public Queue bookQueue(){return new Queue("book.queue", true);}
+    public Queue authorQueue(){return new AnonymousQueue();}
 
     @Bean
-    public Queue authorQueue(){return new Queue("author.queue", true);}
-
-    @Bean
-    public Queue readerQueue(){return new Queue("reader.queue", true);}
-
-
-
-    @Bean
-    public DirectExchange exchangeBook() {return new DirectExchange("lending.exchange");}
+    public Queue readerQueue(){return new AnonymousQueue();}
 
 
 
@@ -74,10 +61,6 @@ public class Config {
 
     @Bean
     public Binding readerBinding() {return BindingBuilder.bind(readerQueue()).to(fanoutReader());}
-
-    @Bean
-    public Binding bookQueryBinding() {return BindingBuilder.bind(bookQueryQueue()).to(exchangeBook()).with("book.query.routingkey");}
-
 
     @Bean
     public MessageConverter converter(){

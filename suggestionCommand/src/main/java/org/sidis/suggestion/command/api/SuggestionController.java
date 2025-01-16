@@ -32,13 +32,6 @@ public class SuggestionController {
         this.repository = repository;
     }
 
-    @Operation(summary = "Gets all suggestions")
-    @ApiResponse(description = "Success", responseCode = "200", content = { @Content(mediaType = "application/json",
-            array = @ArraySchema(schema = @Schema(implementation = SuggestionView.class))) })
-    @GetMapping
-    public Iterable<SuggestionView> findAll() {return suggestionViewMapper.toSuggestionView(service.findAll());}
-
-
     @Operation(summary = "Creates a new suggestion")
     @PostMapping
     public ResponseEntity<SuggestionView> create(@RequestBody @Valid CreateSuggestionRequest request) {

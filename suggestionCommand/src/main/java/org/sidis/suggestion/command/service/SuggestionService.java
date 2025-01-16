@@ -8,8 +8,6 @@ import java.util.List;
 
 public interface SuggestionService {
 
-    List<Suggestion> findAll();
-
     Suggestion create(CreateSuggestionRequest request);
 
     Suggestion partialUpdate(int id, EditSuggestionRequest resource, long desiredVersion);

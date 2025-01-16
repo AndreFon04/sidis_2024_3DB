@@ -35,6 +35,8 @@ public class Suggestion {
 
     private String notes;
 
+    private int state; // REJECTED = -1, PENDING = 0, APPROVED = 1
+
     private static int currentYear = Year.now().getValue();
     private static int counter = 0;
 
@@ -64,12 +66,14 @@ public class Suggestion {
 
     public Suggestion() {}
 
-    public Suggestion(final String bookISBN, final String bookTitle, final String bookAuthorName, final String readerID) {
-        this.suggestionID = generateUniqueSuggestionID();
+    public Suggestion(final String bookISBN, final String bookTitle,
+                      final String bookAuthorName, final String readerID,
+                      final int state) {
         this.bookISBN = bookISBN;
         this.bookTitle = bookTitle;
         this.bookAuthorName = bookAuthorName;
         this.readerID = readerID;
+        this.state = state;
     }
 
     public void setUniqueSuggestionID() {

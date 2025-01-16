@@ -36,16 +36,16 @@ public class Config {
 
 
     @Bean
-    public Queue suggestionQueue(){return new Queue("suggestion.queue", true);}
+    public Queue suggestionQueue(){return new AnonymousQueue();}
 
     @Bean
-    public Queue bookQueue(){return new Queue("book.queue", true);}
+    public Queue bookQueue(){return new AnonymousQueue();}
 
     @Bean
-    public Queue authorQueue(){return new Queue("author.queue", true);}
+    public Queue authorQueue(){return new AnonymousQueue();}
 
     @Bean
-    public Queue readerQueue(){return new Queue("reader.queue", true);}
+    public Queue readerQueue(){return new AnonymousQueue();}
 
 
     @Bean
