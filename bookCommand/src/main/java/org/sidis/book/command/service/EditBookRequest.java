@@ -31,4 +31,9 @@ public class EditBookRequest {
     @Getter
     @Setter
     private String description;
+
+    @NotBlank
+    @Getter
+    @Setter
+    private int bookStatus;
 }

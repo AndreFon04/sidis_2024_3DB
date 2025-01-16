@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -33,20 +34,56 @@ public class MessageConsumer {
     public void notify(SuggestionDTO suggestionDTO, @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String event) {
         logger.info("<-- Received {}", event);
 
+        Optional<Suggestion> optionalSuggestion;
+
         switch (event) {
             case "suggestion.created", "suggestion.updated":
                 logger.info("Received suggestion with id: {}", suggestionDTO.getSuggestionID());
                 if(suggestionRepository.findBySuggestionID(suggestionDTO.getSuggestionID()).isEmpty()) {
                     // restart static internal ID
-                    logger.info("About to save suggestion");
                     Suggestion s = new Suggestion(suggestionDTO.getBookISBN(), suggestionDTO.getBookTitle(),
                             suggestionDTO.getBookAuthorName(), suggestionDTO.getReaderID(), suggestionDTO.getState());
                     s.setSuggestionID(suggestionDTO.getSuggestionID());
                     s.setNotes(suggestionDTO.getNotes());
+                    logger.info("About to save suggestion, state: {}", s.getState());
                     suggestionRepository.save(s);
                     logger.info("Saved suggestion");
                 }
                 break;
+
+            case "suggested.book.created", "suggested.book.already.suggested":
+                if (event.equals("suggested.book.created")) {
+                    logger.info("Received book with isbn: " + suggestionDTO.getBookISBN() +
+                            " :) Suggested book was added, suggestion approved! - Well done!");
+                } else {
+                    logger.info("Received book with isbn: " + suggestionDTO.getBookISBN() +
+                            " Suggested book has been previously suggested, suggestion approved!");
+                }
+                optionalSuggestion = suggestionRepository.findBySuggestionID(suggestionDTO.getSuggestionID());
+                if(optionalSuggestion.isPresent()) {
+                    optionalSuggestion.get().setState(1); // APPROVED (suggestion approved)
+                    logger.info("About to save suggestion, state: {}", optionalSuggestion.get().getState());
+                    suggestionRepository.save(optionalSuggestion.get());
+                    logger.info("Saved suggestion");
+                }
+                break;
+
+            case "suggested.book.already.acquired", "suggested.book.creation.failed":
+                if (event.equals("suggested.book.already.acquired")) {
+                    logger.info("Received book with isbn: {}", suggestionDTO.getBookISBN() +
+                            " :o Book suggested already exists in library. Let me suggest that you get some glasses");
+                } else {
+                    logger.info(" :( Suggested book creation failed !!!");
+                }
+                optionalSuggestion = suggestionRepository.findBySuggestionID(suggestionDTO.getSuggestionID());
+                if(optionalSuggestion.isPresent()) {
+                    optionalSuggestion.get().setState(-1); // REJECTED
+                    logger.info("About to save suggestion, state: {}", optionalSuggestion.get().getState());
+                    suggestionRepository.save(optionalSuggestion.get());
+                    logger.info("Saved suggestion");
+                }
+                break;
+
 
             default:
                 logger.warn("/!\\ Unhandled event type: {}", event);
@@ -78,10 +115,7 @@ public class MessageConsumer {
                 }
                 break;
 
-            case "book.suggestion.created", "book.suggestion.creation.failed", "book.exists", "book.suggestion.exists":
-                break;
-
-            default:
+             default:
                 logger.warn("/!\\ Unhandled event type: {}", event);
         }
     }

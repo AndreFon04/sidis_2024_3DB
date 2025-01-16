@@ -157,7 +157,7 @@ public class BookBootstrap implements CommandLineRunner {
                 bookImage.setImage(image);
                 bookImage.setContentType(contentType);
                 bookImage = bookImageRepo.save(bookImage);
-                Book book = new Book(isbn, title, genre, description, authorList, bookImage);
+                Book book = new Book(isbn, title, genre, description, authorList, bookImage, 1);
                 bookRepo.save(book);
                 System.out.println("Book " + title + " saved successfully with authors " + authors.stream().map(Author::getName).collect(Collectors.joining(", ")));
             } catch (Exception e) {

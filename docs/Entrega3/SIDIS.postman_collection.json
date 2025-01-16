@@ -1,0 +1,1048 @@
+{
+	"info": {
+		"_postman_id": "e5df28fc-ea3f-47f1-9d38-843abea0a912",
+		"name": "SIDIS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30715330"
+	},
+	"item": [
+		{
+			"name": "2ª entrega",
+			"item": [
+				{
+					"name": "Book Command",
+					"item": [
+						{
+							"name": "Author",
+							"item": [
+								{
+									"name": "Create new Author [1]",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"name\": \"efwfwef\",\n    \"biography\": \"afjifwhefwhfhqg\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:7070/api/authors",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "7070",
+											"path": [
+												"api",
+												"authors"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create new Author [2]",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"name\": \"efwfwef\",\n    \"biography\": \"afjifwhefwhfhqg\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:7071/api/authors",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "7071",
+											"path": [
+												"api",
+												"authors"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Partially update Author [1]",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "If-Match",
+												"value": "0",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"title\": \"sji\",\n  \"genre\": \"vsab\",\n  \"description\": \"bergr\",\n  \"author\": \"erhe\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:7070/api/authors/2024/4",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "7070",
+											"path": [
+												"api",
+												"authors",
+												"2024",
+												"4"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Partially update Author [2]",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "If-Match",
+												"value": "0",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"title\": \"sji\",\n  \"genre\": \"vsab\",\n  \"description\": \"bergr\",\n  \"author\": \"erhe\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:7071/api/authors/2024/4",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "7071",
+											"path": [
+												"api",
+												"authors",
+												"2024",
+												"4"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Book",
+							"item": [
+								{
+									"name": "Create a new Book [1]",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"title\": \"Amigo\",\n    \"genre\": \"Terror\",\n    \"description\": \"bsvisdbi\",\n    \"isbn\": \"9780374533557\",\n    \"authorIds\": [\n        \"2025/1\",\n        \"2025/2\"\n    ],\n    \"bookImageId\": \"2\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:7070/api/books",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "7070",
+											"path": [
+												"api",
+												"books"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create a new Book [2]",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"title\": \"Amigo\",\n    \"genre\": \"Terror\",\n    \"description\": \"bsvisdbi\",\n    \"isbn\": \"0545010225\",\n    \"authorIds\": [\n        \"2024/1\",\n        \"2024/2\"\n    ],\n    \"bookImageId\": \"2\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:7070/api/books",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "7070",
+											"path": [
+												"api",
+												"books"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Partially update a Book [1]",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "If-Match",
+												"value": "1",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"title\": \"sji\",\n  \"genre\": \"Romance\",\n  \"description\": \"bergr\",\n  \"author\": \"exrhe\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:7070/api/books/3",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "7070",
+											"path": [
+												"api",
+												"books",
+												"3"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Partially update a Book [2]",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "If-Match",
+												"value": "1",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"title\": \"sji\",\n  \"genre\": \"Romance\",\n  \"description\": \"bergr\",\n  \"author\": \"exrhe\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:7070/api/books/3",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "7070",
+											"path": [
+												"api",
+												"books",
+												"3"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Book Query",
+					"item": [
+						{
+							"name": "Author",
+							"item": [
+								{
+									"name": "Get Author by name",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:7075/api/authors/name/Homer",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "7075",
+											"path": [
+												"api",
+												"authors",
+												"name",
+												"Homer"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Author by ID",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:7075/api/authors/id/2024/5",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "7075",
+											"path": [
+												"api",
+												"authors",
+												"id",
+												"2024",
+												"5"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Book",
+							"item": [
+								{
+									"name": "Get all Books",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:7075/api/books",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "7075",
+											"path": [
+												"api",
+												"books"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Book by ISBN",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:7075/api/books/isbn/1234567894",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "7075",
+											"path": [
+												"api",
+												"books",
+												"isbn",
+												"1234567894"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get top 5 Genres",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:7075/api/books/top5Genres",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "7075",
+											"path": [
+												"api",
+												"books",
+												"top5Genres"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get top 5 Books",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:7075/api/books/top5Books",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "7075",
+											"path": [
+												"api",
+												"books",
+												"top5Books"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Book by Author ID",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:7075/api/books/author/2024/5",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "7075",
+											"path": [
+												"api",
+												"books",
+												"author",
+												"2024",
+												"5"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Reader Command",
+					"item": [
+						{
+							"name": "Partially updates an existing reader",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJleGFtcGxlLmlvIiwic3ViIjoiNCxmcmFuY2lzY283N0BtYWlsLmNvbSIsImV4cCI6MTczMzQyNDMyNywiaWF0IjoxNzMzMzg4MzI3LCJyb2xlcyI6IlJFQURFUiJ9.Ab8oOwAfyJo1sGYliT_ydNJYCbQ4bkDOf7wxjD21KnjGae9v4p8qbT10EbGCNjU2hqzmCIcvQyU8PHAnwpv-ofP2661fKN4-HdUlKp8SEjdlud6DTygtKYhwmjxhlQsBMN2m4i8pI9th_bsFRHE0RDBhTtKJe9qxT762-o17hRc500NTLCMH_jcHynxTrN6vKoPZlmtSpc4DM_4k6EX7zfv32gU7BVN8KyLBfjL10ADx6iPZ8WjNdS3HK6R-a4f87Ma8bRr0HOh2Ge7YjBVD2Ct7TJHhiKZ3jC2DpkQbtIr3DX7CEzfHc-5kFGVpJt_p1BjjAXgrUVH_sjmvBQb7EA",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "If-Match",
+										"value": "1",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"phoneNumber\": \"730651154\",\n  \"interests\": [\n    \"Terror\", \"xxx\", \"Romance\", \"Terror\", \"Drama\"\n  ],\n  \"gdpr\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:7080/api/readers/2024/5",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7080",
+									"path": [
+										"api",
+										"readers",
+										"2024",
+										"5"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Reader Query",
+					"item": [
+						{
+							"name": "Get all Readers",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7085/api/readers",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7085",
+									"path": [
+										"api",
+										"readers"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Reader by ID",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7085/api/readers/id/2024/12",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7085",
+									"path": [
+										"api",
+										"readers",
+										"id",
+										"2024",
+										"12"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Reader by email",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7085/api/readers/email/rui.santos@email.com",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7085",
+									"path": [
+										"api",
+										"readers",
+										"email",
+										"rui.santos@email.com"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Searches any existing Reader by name/email/phone number",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"page\": {\n    \"number\": 1,\n    \"limit\": 100\n  },\n  \"query\": {\n    \"email\": \"josefinoDasBATATAS@email.com\",\n    \"phoneNumber\": \"\"\n  }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:7080/api/readers/search",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7080",
+									"path": [
+										"api",
+										"readers",
+										"search"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Auth Command",
+					"item": [
+						{
+							"name": "Register a new Reader",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Teixeira\",\n  \"password\": \"String14\",\n  \"rePassword\": \"String14\",\n  \"email\": \"teixeira30@email.com\",\n  \"birthdate\": \"1815-3-1\",\n  \"phoneNumber\": \"465996287\",\n  \"gdpr\": true,\n  \"interests\": [\n    \"Romance\"\n  ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:7080/api/public/register",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7080",
+									"path": [
+										"api",
+										"public",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login as Reader 2024/5",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"username\": \"francisco77@mail.com\",\n  \"password\": \"Password5\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:7080/api/public/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7080",
+									"path": [
+										"api",
+										"public",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login as Librarian nº3",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"username\": \"librarian3@mail.com\",\n  \"password\": \"pass3\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:7080/api/public/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7080",
+									"path": [
+										"api",
+										"public",
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Lending Command",
+					"item": [
+						{
+							"name": "Create a new lending",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"bookID\": 7,\n  \"readerID\": \"2024/66\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:7090/api/lendings",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7090",
+									"path": [
+										"api",
+										"lendings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update a lending",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"returnDate\": \"2024-06-21\",\n  \"notes\": \"ola\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:7090/api/lendings/2024/8",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7090",
+									"path": [
+										"api",
+										"lendings",
+										"2024",
+										"8"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Lending Query",
+					"item": [
+						{
+							"name": "all Lendings",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7095/api/lendings",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7095",
+									"path": [
+										"api",
+										"lendings"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "a specific lending",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7095/api/lendings/2024/16",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7095",
+									"path": [
+										"api",
+										"lendings",
+										"2024",
+										"16"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "overdue lendings by tardiness",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7095/api/lendings/overdue",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7095",
+									"path": [
+										"api",
+										"lendings",
+										"overdue"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "lendings per month by genre",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7095/api/lendings/average-lending-per-genre?month=8&year=2024",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7095",
+									"path": [
+										"api",
+										"lendings",
+										"average-lending-per-genre"
+									],
+									"query": [
+										{
+											"key": "month",
+											"value": "8"
+										},
+										{
+											"key": "year",
+											"value": "2024"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "average lending duration",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7095/api/lendings/average-lending-duration",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7095",
+									"path": [
+										"api",
+										"lendings",
+										"average-lending-duration"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Suggestion Command",
+					"item": [
+						{
+							"name": "Create a new suggestion",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"isbn\": \"9780525559479\",\n    \"title\": \"Cem Léguas Submarinas\",\n    \"authorName\": \"Julio Verne\",\n    \"readerID\": \"2025/7\",\n    \"notes\": \"Muito giro\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:7060/api/suggestions",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7060",
+									"path": [
+										"api",
+										"suggestions"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Suggestion Query",
+					"item": [
+						{
+							"name": "Get all Suggestions",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7065/api/suggestions",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7065",
+									"path": [
+										"api",
+										"suggestions"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Suggestion by Suggestion ID",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7065/api/suggestions/id/2025/3",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7065",
+									"path": [
+										"api",
+										"suggestions",
+										"id",
+										"2025",
+										"3"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Suggestion by ISBN",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7065/api/suggestions/isbn/123456789",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7065",
+									"path": [
+										"api",
+										"suggestions",
+										"isbn",
+										"123456789"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Suggestion by Reader ID",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:7065/api/suggestions/reader/2025/7",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "7065",
+									"path": [
+										"api",
+										"suggestions",
+										"reader",
+										"2025",
+										"7"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}

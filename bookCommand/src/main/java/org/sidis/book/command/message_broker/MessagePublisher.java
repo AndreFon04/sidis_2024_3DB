@@ -5,6 +5,8 @@ import org.sidis.book.command.model.Author;
 import org.sidis.book.command.model.AuthorDTO;
 import org.sidis.book.command.model.Book;
 import org.sidis.book.command.model.BookDTO;
+import org.sidis.book.command.model.SuggestionDTO;
+import org.sidis.book.command.repositories.BookRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.FanoutExchange;
@@ -28,6 +30,8 @@ public class MessagePublisher {
 
     @Autowired
     private FanoutExchange fanoutBook;
+    @Autowired
+    private FanoutExchange fanoutSuggestion;
 
 
     public void publishAuthorCreated(Author author) {
@@ -51,7 +55,7 @@ public class MessagePublisher {
             authors.add(author.getAuthorID());
         }
         BookDTO bookDTO = new BookDTO(book.getBookID(), book.getTitle(), book.getIsbn(), book.getDescription(),
-                book.getGenre().getInterest(), authors);
+                book.getGenre().getInterest(), authors, 1);
         template.convertAndSend(fanoutBook.getName(), "book.created", bookDTO);
         logger.info("Sent book.created --> " + fanoutBook.getName() + " / " + "book.created");
     }
@@ -62,8 +66,30 @@ public class MessagePublisher {
             authors.add(author.getAuthorID());
         }
         BookDTO bookDTO = new BookDTO(book.getBookID(), book.getTitle(), book.getIsbn(), book.getDescription(),
-                book.getGenre().getInterest(), authors);
+                book.getGenre().getInterest(), authors, 1);
         template.convertAndSend(fanoutBook.getName(), "book.updated", bookDTO);
         logger.info("Sent book.updated --> ");
     }
+
+
+    public void publishSuggestedBookCreated(SuggestionDTO suggestionDTO) {
+        template.convertAndSend(fanoutSuggestion.getName(), "suggested.book.created", suggestionDTO);
+        logger.info("Sent suggested.book.created --> ");
+    }
+
+    public void publishSuggestedBookAlreadyAcquired(SuggestionDTO suggestionDTO) {
+        template.convertAndSend(fanoutSuggestion.getName(), "suggested.book.already.acquired", suggestionDTO);
+        logger.info("Sent suggested.book.already.acquired --> ");
+    }
+
+    public void publishSuggestedBookAlreadySuggested(SuggestionDTO suggestionDTO) {
+        template.convertAndSend(fanoutSuggestion.getName(), "suggested.book.already.suggested", suggestionDTO);
+        logger.info("Sent suggested.book.already.suggested --> ");
+    }
+
+    public void publishSuggestedBookCreationFailed(SuggestionDTO suggestionDTO) {
+        template.convertAndSend(fanoutSuggestion.getName(), "suggested.book.creation.failed", suggestionDTO);
+        logger.info("Sent suggested.book.creation.failed --> ");
+    }
+
 }

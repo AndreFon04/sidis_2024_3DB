@@ -30,7 +30,6 @@ public class Config {
     }
 
 
-
     @Bean
     public Queue authorQueue(){return new AnonymousQueue();}
 

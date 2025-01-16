@@ -68,6 +68,7 @@ public class BookServiceImpl implements BookService {
         newBook.setDescription(request.getDescription());
         newBook.setAuthor(authors); // Set the list of authors
         newBook.setBookImage(bookImage);
+        newBook.setBookStatus(1);
 
         bookRepository.save(newBook);
         sender.publishBookCreated(newBook);
@@ -122,6 +123,7 @@ public class BookServiceImpl implements BookService {
         }
 
         existingBook.applyPatch(desiredVersion, request.getTitle(), genre, request.getDescription());
+
         bookRepository.save(existingBook);
         sender.publishBookUpdated(existingBook);
 

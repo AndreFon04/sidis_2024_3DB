@@ -2,6 +2,8 @@ package org.sidis.book.command.api;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.sidis.book.command.model.Author;
 
 import java.util.List;
@@ -31,13 +33,10 @@ public class BookView {
     @Schema(description = "The ID of the book")
     private Long bookID;
 
+    @Setter
+    @Getter
     private Long bookCount;
 
-    public Long getBookCount() {
-        return bookCount;
-    }
+    private int bookStatus;
 
-    public void setBookCount(Long bookCount) {
-        this.bookCount = bookCount;
-    }
 }

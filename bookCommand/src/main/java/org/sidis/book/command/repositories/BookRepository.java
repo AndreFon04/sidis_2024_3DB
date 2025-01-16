@@ -19,6 +19,10 @@ public interface BookRepository {
 
     Optional<Book> findBookByBookID(Long bookID);
 
+    int findStatusByIsbn(String isbn);
+
+    int findStatusByID(Long bookID);
+
     Optional<Book> getLastId();
 
     List<Book> findByAuthorId(String authorID);

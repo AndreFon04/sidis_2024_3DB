@@ -47,14 +47,14 @@ class BookController {
 
     private final BookRepository bookRepository;
 
-    private final BookViewMapper bookMapper;
+    private final BookViewMapper bookViewMapper;
 
     private final BookImageRepository bookImageRepo;
 
     @Autowired
-    public BookController(BookServiceImpl bookService, BookViewMapper bookMapper, BookImageRepository bookImageRepo, BookRepository bookRepository) {
+    public BookController(BookServiceImpl bookService, BookViewMapper bookViewMapper, BookImageRepository bookImageRepo, BookRepository bookRepository) {
         this.bookService = bookService;
-        this.bookMapper = bookMapper;
+        this.bookViewMapper = bookViewMapper;
         this.bookImageRepo = bookImageRepo;
         this.bookRepository = bookRepository;
     }
@@ -63,7 +63,7 @@ class BookController {
     @PostMapping
     public ResponseEntity<BookView> createBook(@Valid @RequestBody CreateBookRequest request) {
         Book createdBook = bookService.create(request);
-        return ResponseEntity.ok(bookMapper.toBookView(createdBook));
+        return ResponseEntity.ok(bookViewMapper.toBookView(createdBook));
     }
 
     @PatchMapping(value = "/{bookID}")
@@ -76,7 +76,7 @@ class BookController {
         }
 
         final var book = bookService.partialUpdate(bookID, resource, getVersionFromIfMatchHeader(ifMatchValue));
-        return ResponseEntity.ok().eTag(Long.toString(book.getVersion())).body(bookMapper.toBookView(book));
+        return ResponseEntity.ok().eTag(Long.toString(book.getVersion())).body(bookViewMapper.toBookView(book));
     }
 
     private Long getVersionFromIfMatchHeader(final String ifMatchHeader) {

@@ -1,6 +1,8 @@
 package org.sidis.book.command.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.dao.OptimisticLockingFailureException;
 
 import java.util.ArrayList;
@@ -9,22 +11,30 @@ import java.util.List;
 
 @Entity
 public class Book {
+    @Setter
     @Version
     private long version;
 
+    @Setter
+    @Getter
     @Column(unique = true, updatable = false, nullable = false)
     private String isbn;
 
+    @Getter
     @Column(unique = false, updatable = true, nullable = false)
     private String title;
 
+    @Getter
     @ManyToOne
     @JoinColumn(name = "genre_id", nullable = false)
     private Genre genre;
 
+    @Getter
     @Column(unique = false, updatable = true, nullable = false)
     private String description;
 
+    @Setter
+    @Getter
     @ManyToMany
     @JoinTable(
             name = "book_author",
@@ -33,52 +43,40 @@ public class Book {
     )
     private List<Author> author = new ArrayList<>();
 
+    @Setter
+    @Getter
     @ManyToOne
     @JoinColumn(name = "bookimage_id")
     private BookImage bookImage;
 
+    @Getter
     @Id
     @GeneratedValue
     @Column(unique = true, updatable = false, nullable = false)
     private Long bookID;
 
+    @Getter
+    @Setter
+    private int bookStatus; // -1 - Cancelled | 0 - Suggested | 1 - In library
+
     public Book() {}
 
-    public Book(final String isbn, final String title, final Genre genre, final String description, final List<Author> author, final BookImage bookImage) {
+    public Book(final String isbn, final String title, final Genre genre, final String description, final List<Author> author, final BookImage bookImage, final int bookStatus) {
         this.isbn = isbn;
         this.title = title;
         this.genre = genre;
         this.description = description;
         this.author = author;
         this.bookImage = bookImage;
+        this.bookStatus = bookStatus;
     }
 
-
-    public Long getBookID() {
-        return bookID;
-    }
-
-    public String getIsbn() {
-        return isbn;
-    }
-
-    public void setIsbn(String isbn) {
-        this.isbn = isbn;
-    }
-
-    public Genre getGenre() {
-        return genre;
-    }
 
     public void setGenre(final Genre genre) {
         if (genre == null || genre.getInterest().isBlank()) {
             throw new IllegalArgumentException("Genre must not be null, nor blank");
         }
         this.genre = genre;
-    }
-
-    public String getTitle() {
-        return title;
     }
 
     public void setTitle(final String title) {
@@ -88,31 +86,11 @@ public class Book {
         this.title = title;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
     public void setDescription(final String description) {
         if (description == null || description.isBlank()) {
             throw new IllegalArgumentException("Description must not be null, nor blank");
         }
         this.description = description;
-    }
-
-    public List<Author> getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(List<Author> author) {
-        this.author = author;
-    }
-
-    public BookImage getBookImage() {
-        return bookImage;
-    }
-
-    public void setBookImage(BookImage bookImage) {
-        this.bookImage = bookImage;
     }
 
     public Long getVersion() {
@@ -130,10 +108,6 @@ public class Book {
 
     public void setBookID(long bookID) {
         this.bookID=bookID;
-    }
-
-    public void setVersion(long version) {
-        this.version = version;
     }
 
     public boolean isValidISBN13(String isbn) {

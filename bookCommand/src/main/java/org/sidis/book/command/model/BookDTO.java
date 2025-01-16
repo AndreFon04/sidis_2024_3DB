@@ -21,4 +21,5 @@ public class BookDTO {
     private String genre;
     private List<String> authors = new ArrayList<>();
 //    private BookImage bookImage;
+    private int status;
 }

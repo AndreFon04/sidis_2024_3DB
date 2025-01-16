@@ -38,6 +38,13 @@ public interface SpringDataBookRepository extends BookRepository, CrudRepository
 //    @Query("SELECT g.interest, COUNT(b) FROM Genre g JOIN g.books b GROUP BY g.interest ORDER BY COUNT(b) DESC LIMIT 5")
 //    List<Map.Entry<String, Long>> findTop5Genres();
 
+    @Override
+    @Query("SELECT b FROM Book b WHERE b.isbn LIKE :isbn")
+    int findStatusByIsbn(@Param("isbn") String isbn);
+
+    @Query("SELECT b FROM Book b WHERE b.bookID = :bookID")
+    int findStatusByID(@Param("bookID")Long bookID);
+
 
     @Query("SELECT b FROM Book b JOIN b.author a WHERE a.authorID = :authorID")
     List<Book> findByAuthorId(@Param("authorID") String authorID);

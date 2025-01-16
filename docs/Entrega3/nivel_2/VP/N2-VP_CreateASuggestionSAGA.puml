@@ -1,0 +1,94 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+actor "Reader" as R
+participant "Suggestion Command[w]" as SC
+participant "Book Command[j]" as BC
+participant "Book Query[k]" as BQ
+participant "Suggestion Query[i]" as SQ
+
+participant "Message Broker" as MB
+
+
+R -> SC : POST /suggestion (isbn, title,\n\t\t authorName, readerID, notes)
+activate SC
+
+SC -> SC : findBookByIsbn (isbn) returns false
+SC -> SC : findBookByReaderID (readerID) returns false
+SC -> SC : setState(0) - PENDING
+SC -> SC : save (isbn, title, authorName, \n\t\t readerID, notes)
+
+SC -> MB : publishSuggestionCreated(suggestion)
+activate MB
+MB -> SQ : notify(Suggestion)
+activate SQ
+SQ -> SQ : setState(0) - PENDING
+SQ -> SQ : save (suggestion)
+deactivate SQ
+
+SC --> R: 200
+deactivate SC
+
+MB -> BC : notify(suggestionDTO)
+activate BC
+
+    alt book does not exist in db - try to create book as SUGGESTED
+            BC -> BC : findBookByIsbn(suggestionDTO.getBookIsbn()) returns false
+            BC -> BC : save (isbn, title, authorName, readerID, notes)
+            BC -> MB : publishSuggestedBookCreated(suggestionDTO)
+            BC -> MB : publishBookCreated(bookDTO)
+
+            MB -> BQ : notify(BookDTO)
+            activate BQ
+            BQ -> BQ : setState(1) - IN LIBRARY
+            BQ -> BQ : save (bookDTO)
+            deactivate BQ
+
+            MB -> SC : notify(SuggestionDTO)
+            activate SC
+' optionalSuggestion = suggestionRepository.findBySuggestionID(suggestionDTO.getSuggestionID())
+            SC -> SC : optionalSuggestion
+            SC -> SC : optionalSuggestion.get().setState(1) - APPROVED
+            SC -> SC : save (suggestionDTO)
+
+    else creation of in db failed
+            BC -> MB : publishSuggestedBookCreationFailed(suggestionDTO)
+
+            MB -> SC : notify(SuggestionDTO)
+            SC -> SC : optionalSuggestion
+            SC -> SC : optionalSuggestion.get().setState(-1) - REJECTED
+            SC -> SC : save (suggestionDTO)
+
+    else book already exists in db
+            BC -> BC : findBookByIsbn(suggestionDTO.getBookIsbn()).get().getBookStatus() == 1 - IN LIBRARY
+            BC -> MB : publishSuggestedBookAlreadyAcquired(suggestionDTO)
+
+            MB -> SC : notify(SuggestionDTO)
+            SC -> SC : optionalSuggestion
+            SC -> SC : optionalSuggestion.get().setState(-1) - REJECTED
+            SC -> SC : save (suggestionDTO)
+
+    else book already suggested
+            BC -> BC : findBookByIsbn(suggestionDTO.getBookIsbn()).get().getBookStatus() == 0 - SUGGESTED
+            BC -> MB : publishSuggestedBookAlreadySuggested(suggestionDTO)
+
+            MB -> SC : notify(SuggestionDTO)
+            SC -> SC : optionalSuggestion
+            SC -> SC : optionalSuggestion.get().setState(1) - APPROVED
+            SC -> SC : save (suggestionDTO)
+
+            SC -> MB : publishBookCreated(suggestion)
+            MB -> SQ : notify(Suggestion)
+            activate SQ
+            SQ -> SQ : setState(1)
+            SQ -> SQ : save (suggestion)
+            deactivate SQ
+    end
+
+
+deactivate MB
+
+' Adiciona uma nota visível abaixo do diagrama
+footer Book State = -1 - CANCELLED | 0 - SUGGESTED | 1 - IN LIBRARY **** Suggestion State = REJECTED = -1, PENDING = 0, APPROVED = 1
+
+@enduml
